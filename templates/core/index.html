@@ -1,28 +1,151 @@
 {% extends 'base.html' %} {% block title %}صفحه اصلی | پلتفرم خودرو{% endblock%}
 {% block content %}
-
-<div class="text-center py-20">
+<!-- بخش خوش‌آمدگویی -->
+<div class="text-center py-16">
   <h1
     class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6"
   >
     به پلتفرم <span class="text-primary">خرید و فروش خودرو</span> و قطعات خوش
     آمدید!
   </h1>
-  <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+  <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
     اولین و بهترین مرجع برای پیدا کردن خودروی مناسب، مقایسه قیمت‌ها و تهیه قطعات
     یدکی با تضمین اصالت.
   </p>
-  <div class="flex justify-center gap-4">
-    <a
-      href="#"
-      class="bg-primary hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition shadow-lg hover:shadow-xl hover:-translate-y-1 transform"
-      >مشاهده آگهی‌ها</a
+</div>
+
+<!-- بخش نمایش خودروها -->
+<div class="mb-16">
+  <div class="flex justify-between items-center mb-6">
+    <h2
+      class="text-2xl font-bold text-gray-800 dark:text-white border-r-4 border-primary pr-3"
     >
-    <a
-      href="#"
-      class="bg-white dark:bg-gray-800 border-2 border-primary text-primary hover:bg-gray-50 dark:hover:bg-gray-700 px-8 py-3 rounded-xl font-bold text-lg transition"
-      >ثبت آگهی رایگان</a
+      جدیدترین خودروها
+    </h2>
+    <a href="#" class="text-primary hover:underline text-sm font-medium"
+      >مشاهده همه</a
     >
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for car in cars %}
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group"
+    >
+      <!-- تصویر خودرو -->
+      <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
+        {% if car.image %}
+        <img
+          src="{{ car.image.url }}"
+          alt="{{ car.title }}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        {% else %}
+        <div class="flex items-center justify-center h-full text-gray-400">
+          بدون تصویر
+        </div>
+        {% endif %}
+        <span
+          class="absolute top-3 right-3 bg-primary text-white text-xs px-2 py-1 rounded-md"
+          >{{ car.get_status_display }}</span
+        >
+      </div>
+      <!-- اطلاعات خودرو -->
+      <div class="p-5">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">
+          {{ car.title }}
+        </h3>
+        <div
+          class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4"
+        >
+          <span>{{ car.brand }} {{ car.model }}</span>
+          <span>{{ car.year }}</span>
+        </div>
+        <div class="flex justify-between items-center mt-4">
+          <span class="text-xl font-bold text-primary"
+            >{{ car.price|floatformat:"0" }}
+            <span class="text-sm font-normal text-gray-500">تومان</span></span
+          >
+          <a
+            href="#"
+            class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition"
+            >جزئیات</a
+          >
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div
+      class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
+    >
+      هنوز هیچ آگهی خودرویی ثبت نشده است.
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- بخش نمایش قطعات -->
+<div>
+  <div class="flex justify-between items-center mb-6">
+    <h2
+      class="text-2xl font-bold text-gray-800 dark:text-white border-r-4 border-green-500 pr-3"
+    >
+      قطعات پرفروش
+    </h2>
+    <a href="#" class="text-green-500 hover:underline text-sm font-medium"
+      >مشاهده همه</a
+    >
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for part in parts %}
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group"
+    >
+      <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
+        {% if part.image %}
+        <img
+          src="{{ part.image.url }}"
+          alt="{{ part.name }}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        {% else %}
+        <div class="flex items-center justify-center h-full text-gray-400">
+          بدون تصویر
+        </div>
+        {% endif %}
+        <span
+          class="absolute top-3 right-3 bg-green-500 text-white text-xs px-2 py-1 rounded-md"
+          >{{ part.get_condition_display }}</span
+        >
+      </div>
+      <div class="p-5">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">
+          {{ part.name }}
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          {{ part.brand }}
+        </p>
+        <div class="flex justify-between items-center mt-4">
+          <span class="text-xl font-bold text-green-600 dark:text-green-400"
+            >{{ part.price|floatformat:"0" }}
+            <span class="text-sm font-normal text-gray-500">تومان</span></span
+          >
+          <a
+            href="#"
+            class="text-sm bg-green-50 dark:bg-gray-700 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition"
+            >جزئیات</a
+          >
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div
+      class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
+    >
+      هنوز هیچ قطعه‌ای ثبت نشده است.
+    </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
