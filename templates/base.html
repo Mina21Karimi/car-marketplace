@@ -12,7 +12,7 @@
       type="text/css"
     />
 
-    <!-- Tailwind CSS (CDN for development) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -42,14 +42,27 @@
         display: none !important;
       }
     </style>
+
+    <!-- اسکریپت جلوگیری از پرش تم در هنگام لود (Flicker) -->
+    <script>
+      if (
+        localStorage.getItem("theme") === "dark" ||
+        (!("theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
   </head>
   <body
     class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans transition-colors duration-300"
-    x-data="{
-    darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-}"
-    x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light')); if(darkMode) document.documentElement.classList.add('dark')"
-    :class="{ 'dark': darkMode }"
+    x-data="{ darkMode: document.documentElement.classList.contains('dark') }"
+    x-init="$watch('darkMode', val => {
+          localStorage.setItem('theme', val ? 'dark' : 'light');
+          document.documentElement.classList.toggle('dark', val);
+      })"
   >
     <!-- هدر (Header) -->
     <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
@@ -61,15 +74,23 @@
           خودرو<span class="text-gray-800 dark:text-white">مارکت</span>
         </a>
 
-        <!-- منوی دسکتاپ (نمونه) -->
+        <!-- منوی دسکتاپ -->
         <nav class="hidden md:flex space-x-6 space-x-reverse">
-          <a href="#" class="hover:text-primary transition">خرید خودرو</a>
-          <a href="#" class="hover:text-primary transition">فروش خودرو</a>
-          <a href="#" class="hover:text-primary transition">قطعات یدکی</a>
-          <a href="#" class="hover:text-primary transition">مشاوره</a>
+          <a href="#" class="hover:text-primary transition dark:text-gray-200"
+            >خرید خودرو</a
+          >
+          <a href="#" class="hover:text-primary transition dark:text-gray-200"
+            >فروش خودرو</a
+          >
+          <a href="#" class="hover:text-primary transition dark:text-gray-200"
+            >قطعات یدکی</a
+          >
+          <a href="#" class="hover:text-primary transition dark:text-gray-200"
+            >مشاوره</a
+          >
         </nav>
 
-        <!-- دکمه‌ها -->
+        <!-- دکمه‌ها و وضعیت کاربر -->
         <div class="flex items-center space-x-4 space-x-reverse">
           <!-- دکمه تم روشن/تاریک -->
           <button
@@ -79,7 +100,7 @@
             <!-- آیکون خورشید (حالت تاریک فعال است) -->
             <svg
               x-show="darkMode"
-              class="w-5 h-5"
+              class="w-5 h-5 text-yellow-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -94,7 +115,7 @@
             <!-- آیکون ماه (حالت روشن فعال است) -->
             <svg
               x-show="!darkMode"
-              class="w-5 h-5"
+              class="w-5 h-5 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -108,14 +129,39 @@
             </svg>
           </button>
 
-          <a
-            href="#"
-            class="hidden md:block text-sm font-medium hover:text-primary transition"
-            >ورود / ثبت‌نام</a
+          <!-- وضعیت کاربر (ورود/خروج) -->
+          {% if user.is_authenticated %}
+          <span
+            class="text-sm font-bold text-gray-700 dark:text-gray-300 hidden md:block"
+            >خوش آمدی، {{ user.username }}</span
           >
+          <form method="post" action="{% url 'logout' %}" class="inline m-0">
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="text-sm text-red-500 hover:text-red-700 font-medium transition"
+            >
+              خروج
+            </button>
+          </form>
+          {% else %}
+          <a
+            href="{% url 'login' %}"
+            class="text-sm font-medium hover:text-primary transition dark:text-gray-200"
+            >ورود</a
+          >
+          <span class="text-gray-400">|</span>
+          <a
+            href="{% url 'register' %}"
+            class="text-sm font-medium hover:text-primary transition dark:text-gray-200"
+            >ثبت‌نام</a
+          >
+          {% endif %}
+
+          <!-- دکمه ثبت آگهی -->
           <a
             href="#"
-            class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md"
+            class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:block"
             >ثبت آگهی</a
           >
         </div>

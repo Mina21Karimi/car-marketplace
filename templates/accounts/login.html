@@ -1,0 +1,35 @@
+{% extends 'base.html' %} {% block title %}ورود | پلتفرم خودرو{% endblock %} {%
+block content %}
+<div
+  class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md mt-10"
+>
+  <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
+    ورود به حساب کاربری
+  </h2>
+  <form method="post" class="space-y-4">
+    {% csrf_token %} {% for field in form %}
+    <div>
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >{{ field.label }}</label
+      >
+      {{ field }} {% for error in field.errors %}
+      <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <button
+      type="submit"
+      class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition"
+    >
+      ورود
+    </button>
+  </form>
+  <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+    حساب کاربری ندارید؟
+    <a href="{% url 'register' %}" class="text-primary hover:underline"
+      >ثبت‌نام کنید</a
+    >
+  </p>
+</div>
+{% endblock %}

@@ -3,12 +3,13 @@
 <!-- بخش خوش‌آمدگویی -->
 <div class="text-center py-16">
   <h1
-    class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6"
+    class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 drop-shadow-sm"
   >
-    به پلتفرم <span class="text-primary">خرید و فروش خودرو</span> و قطعات خوش
-    آمدید!
+    به پلتفرم
+    <span class="text-primary dark:text-blue-400">خرید و فروش خودرو</span> و
+    قطعات خوش آمدید!
   </h1>
-  <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+  <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
     اولین و بهترین مرجع برای پیدا کردن خودروی مناسب، مقایسه قیمت‌ها و تهیه قطعات
     یدکی با تضمین اصالت.
   </p>
@@ -22,7 +23,9 @@
     >
       جدیدترین خودروها
     </h2>
-    <a href="#" class="text-primary hover:underline text-sm font-medium"
+    <a
+      href="#"
+      class="text-primary dark:text-blue-400 hover:underline text-sm font-medium"
       >مشاهده همه</a
     >
   </div>
@@ -32,7 +35,6 @@
     <div
       class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group"
     >
-      <!-- تصویر خودرو -->
       <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
         {% if car.image %}
         <img
@@ -50,7 +52,6 @@
           >{{ car.get_status_display }}</span
         >
       </div>
-      <!-- اطلاعات خودرو -->
       <div class="p-5">
         <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">
           {{ car.title }}
@@ -61,14 +62,16 @@
           <span>{{ car.brand }} {{ car.model }}</span>
           <span>{{ car.year }}</span>
         </div>
-        <div class="flex justify-between items-center mt-4">
-          <span class="text-xl font-bold text-primary"
+        <div
+          class="flex justify-between items-center mt-4 border-t border-gray-100 dark:border-gray-700 pt-4"
+        >
+          <span class="text-xl font-bold text-primary dark:text-blue-400"
             >{{ car.price|floatformat:"0" }}
             <span class="text-sm font-normal text-gray-500">تومان</span></span
           >
           <a
             href="#"
-            class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition"
+            class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white dark:hover:bg-blue-600 transition"
             >جزئیات</a
           >
         </div>
@@ -76,7 +79,7 @@
     </div>
     {% empty %}
     <div
-      class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
+      class="col-span-full text-center py-10 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
     >
       هنوز هیچ آگهی خودرویی ثبت نشده است.
     </div>
@@ -126,14 +129,16 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
           {{ part.brand }}
         </p>
-        <div class="flex justify-between items-center mt-4">
+        <div
+          class="flex justify-between items-center mt-4 border-t border-gray-100 dark:border-gray-700 pt-4"
+        >
           <span class="text-xl font-bold text-green-600 dark:text-green-400"
             >{{ part.price|floatformat:"0" }}
             <span class="text-sm font-normal text-gray-500">تومان</span></span
           >
           <a
             href="#"
-            class="text-sm bg-green-50 dark:bg-gray-700 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition"
+            class="text-sm bg-green-50 dark:bg-gray-700 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white dark:hover:bg-green-600 transition"
             >جزئیات</a
           >
         </div>
@@ -141,7 +146,7 @@
     </div>
     {% empty %}
     <div
-      class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
+      class="col-span-full text-center py-10 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"
     >
       هنوز هیچ قطعه‌ای ثبت نشده است.
     </div>
