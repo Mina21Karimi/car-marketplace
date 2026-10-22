@@ -9,6 +9,10 @@ class CarListing(models.Model):
     )
 
     title = models.CharField(max_length=200, verbose_name="عنوان آگهی")
+    from django.contrib.auth.models import User # این خط را بالای فایل اضافه کنید
+
+# ... (داخل کلاس CarListing)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
     brand = models.CharField(max_length=100, verbose_name="برند")
     model = models.CharField(max_length=100, verbose_name="مدل")
     year = models.IntegerField(verbose_name="سال ساخت")
