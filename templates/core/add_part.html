@@ -1,12 +1,12 @@
-{% extends 'base.html' %} {% block title %}ثبت آگهی قطعه | پلتفرم
-خودرو{%endblock %} {% block content %}
+{% extends 'base.html' %} {% block title %}{% if edit_mode %}ویرایش{% else
+%}ثبت{% endif %} آگهی قطعه | پلتفرم خودرو{% endblock %} {% block content %}
 <div
   class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md mt-10"
 >
   <h2
     class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8 border-b pb-4 dark:border-gray-700"
   >
-    ثبت آگهی قطعه جدید
+    {% if edit_mode %}ویرایش آگهی قطعه{% else %}ثبت آگهی قطعه جدید{% endif %}
   </h2>
 
   <form method="post" enctype="multipart/form-data" class="space-y-6">
@@ -34,7 +34,7 @@
       class="flex justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-8"
     >
       <a
-        href="{% url 'home' %}"
+        href="{% url 'dashboard' %}"
         class="px-6 py-2.5 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition"
         >انصراف</a
       >
@@ -42,7 +42,7 @@
         type="submit"
         class="px-6 py-2.5 rounded-xl font-bold text-white bg-green-500 hover:bg-green-600 transition shadow-md"
       >
-        ثبت قطعه
+        {% if edit_mode %}ذخیره تغییرات{% else %}ثبت قطعه{% endif %}
       </button>
     </div>
   </form>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block title %}حذف آگهی{% endblock %} {% block
+content %}
+<div
+  class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md mt-20 text-center"
+>
+  <h2 class="text-2xl font-bold text-red-500 mb-4">حذف {{ type }}</h2>
+  <p class="text-gray-700 dark:text-gray-300 mb-8">
+    آیا از حذف آگهی
+    <strong class="text-gray-900 dark:text-white">"{{ object }}"</strong> مطمئن
+    هستید؟ این عمل غیرقابل بازگشت است.
+  </p>
+  <form method="post" class="flex justify-center gap-4">
+    {% csrf_token %}
+    <button
+      type="submit"
+      class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl transition"
+    >
+      بله، حذف کن
+    </button>
+    <a
+      href="{% url 'dashboard' %}"
+      class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-xl transition"
+      >انصراف</a
+    >
+  </form>
+</div>
+{% endblock %}

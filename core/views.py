@@ -90,3 +90,56 @@ def add_part(request):
         form = PartListingForm()
 
     return render(request, 'core/add_part.html', {'form': form})
+
+# ... (کدهای قبلی) ...
+
+@login_required(login_url='login')
+def dashboard(request):
+    # گرفتن آگهی‌های خودرو و قطعه‌ای که کاربر جاری ثبت کرده است
+    user_cars = CarListing.objects.filter(user=request.user).order_by('-created_at')
+    user_parts = PartListing.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, 'core/dashboard.html', {
+        'user_cars': user_cars,
+        'user_parts': user_parts
+    })
+
+@login_required(login_url='login')
+def edit_car(request, pk):
+    car = get_object_or_404(CarListing, pk=pk, user=request.user) # فقط صاحب آگهی می‌تواند ویرایش کند
+    if request.method == 'POST':
+        form = CarListingForm(request.POST, request.FILES, instance=car)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = CarListingForm(instance=car)
+    return render(request, 'core/add_car.html', {'form': form, 'edit_mode': True})
+
+@login_required(login_url='login')
+def delete_car(request, pk):
+    car = get_object_or_404(CarListing, pk=pk, user=request.user)
+    if request.method == 'POST':
+        car.delete()
+        return redirect('dashboard')
+    return render(request, 'core/confirm_delete.html', {'object': car, 'type': 'خودرو'})
+
+@login_required(login_url='login')
+def edit_part(request, pk):
+    part = get_object_or_404(PartListing, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = PartListingForm(request.POST, request.FILES, instance=part)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = PartListingForm(instance=part)
+    return render(request, 'core/add_part.html', {'form': form, 'edit_mode': True})
+
+@login_required(login_url='login')
+def delete_part(request, pk):
+    part = get_object_or_404(PartListing, pk=pk, user=request.user)
+    if request.method == 'POST':
+        part.delete()
+        return redirect('dashboard')
+    return render(request, 'core/confirm_delete.html', {'object': part, 'type': 'قطعه'})
