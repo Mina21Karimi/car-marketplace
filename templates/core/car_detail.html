@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% block title %}{{ car.title }} | پلتفرم خودرو{%
+endblock %} {% block content %}
+<div class="max-w-5xl mx-auto mt-8">
+  <!-- دکمه بازگشت -->
+  <a
+    href="{% url 'home' %}"
+    class="inline-flex items-center text-primary hover:underline mb-6"
+  >
+    <svg
+      class="w-4 h-4 ml-1"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5l7 7-7 7"
+      ></path>
+    </svg>
+    بازگشت به صفحه اصلی
+  </a>
+
+  <div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <!-- بخش تصویر -->
+      <div
+        class="h-72 md:h-full min-h-[400px] bg-gray-200 dark:bg-gray-900 relative"
+      >
+        {% if car.image %}
+        <img
+          src="{{ car.image.url }}"
+          alt="{{ car.title }}"
+          class="w-full h-full object-cover absolute inset-0"
+        />
+        {% else %}
+        <div class="flex items-center justify-center h-full text-gray-400">
+          تصویری ثبت نشده است
+        </div>
+        {% endif %}
+        <span
+          class="absolute top-4 right-4 bg-primary text-white text-sm px-3 py-1 rounded-md shadow-md"
+          >{{ car.get_status_display }}</span
+        >
+      </div>
+
+      <!-- بخش اطلاعات -->
+      <div class="p-8 flex flex-col justify-between">
+        <div>
+          <h1
+            class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4"
+          >
+            {{ car.title }}
+          </h1>
+          <p
+            class="text-2xl font-bold text-primary dark:text-blue-400 mb-6 border-b pb-6 dark:border-gray-700"
+          >
+            {{ car.price|floatformat:"0" }}
+            <span class="text-sm font-normal text-gray-500">تومان</span>
+          </p>
+
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            <div
+              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
+            >
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                >برند و مدل</span
+              >
+              <span class="font-bold text-gray-800 dark:text-gray-200"
+                >{{ car.brand }} {{ car.model }}</span
+              >
+            </div>
+            <div
+              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
+            >
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                >سال ساخت</span
+              >
+              <span class="font-bold text-gray-800 dark:text-gray-200"
+                >{{ car.year }}</span
+              >
+            </div>
+            <div
+              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
+            >
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                >کارکرد</span
+              >
+              <span class="font-bold text-gray-800 dark:text-gray-200"
+                >{{ car.mileage }} کیلومتر</span
+              >
+            </div>
+            <div
+              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
+            >
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
+                >تاریخ ثبت</span
+              >
+              <span class="font-bold text-gray-800 dark:text-gray-200"
+                >{{ car.created_at|date:"Y/m/d" }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <a
+            href="#"
+            class="block w-full text-center bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-blue-500/30"
+          >
+            درخواست تماس با فروشنده
+          </a>
+          <p class="text-center text-xs text-gray-400 mt-3">
+            برای حفظ حریم خصوصی، اطلاعات تماس فقط برای کاربران احراز هویت شده
+            نمایش داده می‌شود.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- بخش توضیحات -->
+    <div
+      class="p-8 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
+    >
+      <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">
+        توضیحات فروشنده
+      </h3>
+      <p
+        class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"
+      >
+        {{ car.description }}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

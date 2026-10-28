@@ -14,6 +14,33 @@
     یدکی با تضمین اصالت.
   </p>
 </div>
+<!-- نوار جستجو -->
+<div class="max-w-2xl mx-auto mb-12">
+  <form
+    method="get"
+    action="{% url 'home' %}"
+    class="flex shadow-md rounded-xl overflow-hidden"
+  >
+    <input
+      type="text"
+      name="q"
+      value="{{ query|default:'' }}"
+      placeholder="جستجوی خودرو (مثلاً پژو ۲۰۶)..."
+      class="w-full px-6 py-4 focus:outline-none dark:bg-gray-700 dark:text-white border-none"
+    />
+    <button
+      type="submit"
+      class="bg-primary text-white px-8 font-bold hover:bg-blue-700 transition"
+    >
+      جستجو
+    </button>
+  </form>
+  {% if query %}
+  <p class="text-sm text-gray-500 mt-3 text-center">
+    نتایج جستجو برای: <strong>{{ query }}</strong>
+  </p>
+  {% endif %}
+</div>
 
 <!-- بخش نمایش خودروها -->
 <div class="mb-16">
@@ -70,9 +97,7 @@
             <span class="text-sm font-normal text-gray-500">تومان</span></span
           >
           <a
-            href="#"
-            class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white dark:hover:bg-blue-600 transition"
-            >جزئیات</a
+            <a href="{% url 'car_detail' car.pk %}" class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white dark:hover:bg-blue-600 transition">جزئیات</a>
           >
         </div>
       </div>

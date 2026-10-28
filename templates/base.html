@@ -159,11 +159,46 @@
           {% endif %}
 
           <!-- دکمه ثبت آگهی -->
-          <a
-            href="{% url 'add_car' %}"
-            class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:block"
-            >ثبت آگهی</a
-          >
+          <!-- منوی کشویی ثبت آگهی -->
+          <div class="relative" x-data="{ open: false }">
+            <button
+              @click="open = !open"
+              class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:flex items-center gap-2"
+            >
+              ثبت آگهی
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+            <!-- محتوای منوی کشویی -->
+            <div
+              x-show="open"
+              @click.away="open = false"
+              class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-100 dark:border-gray-700 hidden md:block"
+              style="display: none"
+            >
+              <a
+                href="{% url 'add_car' %}"
+                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >ثبت آگهی خودرو</a
+              >
+              <a
+                href="{% url 'add_part' %}"
+                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >ثبت آگهی قطعه</a
+              >
+            </div>
+          </div>
         </div>
       </div>
     </header>

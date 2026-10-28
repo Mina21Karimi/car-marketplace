@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class CarListing(models.Model):
     STATUS_CHOICES = (
@@ -37,7 +38,8 @@ class PartListing(models.Model):
         ('new', 'نو'),
         ('used', 'دست دوم'),
     )
-
+# داخل کلاس PartListing، بعد از خط name:
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
     name = models.CharField(max_length=200, verbose_name="نام قطعه")
     brand = models.CharField(max_length=100, verbose_name="برند سازنده")
     part_number = models.CharField(max_length=100, blank=True, null=True, verbose_name="شماره فنی قطعه")

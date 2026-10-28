@@ -13,3 +13,20 @@ class CarListingForm(forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
             })
+
+from django import forms
+from .models import CarListing, PartListing # PartListing اضافه شود
+
+# ... (کلاس CarListingForm را دست نزنید) ...
+
+class PartListingForm(forms.ModelForm):
+    class Meta:
+        model = PartListing
+        fields = ['name', 'brand', 'part_number', 'condition', 'price', 'description', 'image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
+            })

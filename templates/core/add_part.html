@@ -1,0 +1,50 @@
+{% extends 'base.html' %} {% block title %}ثبت آگهی قطعه | پلتفرم
+خودرو{%endblock %} {% block content %}
+<div
+  class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md mt-10"
+>
+  <h2
+    class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8 border-b pb-4 dark:border-gray-700"
+  >
+    ثبت آگهی قطعه جدید
+  </h2>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for field in form %}
+      <div
+        class="{% if field.name == 'description' or field.name == 'image' or field.name == 'name' %}md:col-span-2{% endif %}"
+      >
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >{{ field.label }}</label
+        >
+        {{ field }} {% if field.help_text %}
+        <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+        {% endif %} {% for error in field.errors %}
+        <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div
+      class="flex justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-8"
+    >
+      <a
+        href="{% url 'home' %}"
+        class="px-6 py-2.5 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition"
+        >انصراف</a
+      >
+      <button
+        type="submit"
+        class="px-6 py-2.5 rounded-xl font-bold text-white bg-green-500 hover:bg-green-600 transition shadow-md"
+      >
+        ثبت قطعه
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
