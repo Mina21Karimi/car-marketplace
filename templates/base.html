@@ -1,242 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}پلتفرم خودرو و قطعات{% endblock %}</title>
 
     <!-- فونت وزیرمتن -->
-    <link
-      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-font-face.css"
-      rel="stylesheet"
-      type="text/css"
-    />
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Vazirmatn", "sans-serif"],
-            },
-            colors: {
-              primary: "#2563eb", // رنگ آبی اصلی
-            },
-          },
-        },
-      };
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563eb', // رنگ آبی اصلی
+                    }
+                }
+            }
+        }
     </script>
 
     <!-- Alpine.js برای مدیریت تم و منوهای تعاملی -->
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-      /* جلوگیری از پرش صفحه هنگام لود تم */
-      [x-cloak] {
-        display: none !important;
-      }
+        [x-cloak] { display: none !important; }
     </style>
 
     <!-- اسکریپت جلوگیری از پرش تم در هنگام لود -->
     <script>
-      if (
-        localStorage.getItem("theme") === "dark" ||
-        (!("theme" in localStorage) &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
-  </head>
-  <body
-    class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans transition-colors duration-300"
-    x-data="{ darkMode: document.documentElement.classList.contains('dark') }"
-    x-init="$watch('darkMode', val => {
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans transition-colors duration-300"
+      x-data="{ darkMode: document.documentElement.classList.contains('dark') }"
+      x-init="$watch('darkMode', val => {
           localStorage.setItem('theme', val ? 'dark' : 'light');
           document.documentElement.classList.toggle('dark', val);
-      })"
-  >
+      })">
+
     <!-- هدر (Header) -->
     <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
-      <div
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <!-- لوگو -->
-        <a href="/" class="text-2xl font-bold text-primary dark:text-blue-400">
-          خودرو<span class="text-gray-800 dark:text-white">مارکت</span>
-        </a>
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <!-- لوگو -->
+            <a href="/" class="text-2xl font-bold text-primary dark:text-blue-400">
+                خودرو<span class="text-gray-800 dark:text-white">مارکت</span>
+            </a>
 
-        <!-- منوی دسکتاپ -->
-        <nav class="hidden md:flex space-x-6 space-x-reverse">
-          <a href="#" class="hover:text-primary transition dark:text-gray-200"
-            >خرید خودرو</a
-          >
-          <a href="#" class="hover:text-primary transition dark:text-gray-200"
-            >فروش خودرو</a
-          >
-          <a href="#" class="hover:text-primary transition dark:text-gray-200"
-            >قطعات یدکی</a
-          >
-          <a href="#" class="hover:text-primary transition dark:text-gray-200"
-            >مشاوره</a
-          >
-        </nav>
+            <!-- منوی دسکتاپ -->
+            <nav class="hidden md:flex space-x-6 space-x-reverse">
+                <a href="#" class="hover:text-primary transition dark:text-gray-200">خرید خودرو</a>
+                <a href="#" class="hover:text-primary transition dark:text-gray-200">فروش خودرو</a>
+                <a href="#" class="hover:text-primary transition dark:text-gray-200">قطعات یدکی</a>
+                <!-- لینک مشاوره به درستی اینجاست -->
+                <a href="{% url 'consultation' %}" class="hover:text-primary transition dark:text-gray-200">مشاوره</a>
+            </nav>
 
-        <!-- دکمه‌ها و وضعیت کاربر -->
-        <div class="flex items-center gap-3 md:gap-4">
-          <!-- دکمه تم روشن/تاریک -->
-          <button
-            @click="darkMode = !darkMode"
-            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-          >
-            <svg
-              x-show="darkMode"
-              class="w-5 h-5 text-yellow-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              ></path>
-            </svg>
-            <svg
-              x-show="!darkMode"
-              class="w-5 h-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-              ></path>
-            </svg>
-          </button>
+            <!-- دکمه‌ها و وضعیت کاربر -->
+            <div class="flex items-center gap-3 md:gap-4">
 
-          <!-- وضعیت کاربر (ورود/خروج و صندوق پیام) -->
-          {% if user.is_authenticated %}
-          <span
-            class="text-sm font-bold text-gray-700 dark:text-gray-300 hidden md:block whitespace-nowrap"
-          >
-            خوش آمدی، {{ user.username }}
-          </span>
-          <a
-            href="{% url 'inbox' %}"
-            class="text-sm font-medium text-primary hover:underline whitespace-nowrap"
-            >صندوق پیام‌ها</a
-          >
-          <a
-            href="{% url 'dashboard' %}"
-            class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition whitespace-nowrap"
-            >پنل کاربری</a
-          >
-          <!-- این خط اضافه شود -->
+                <!-- دکمه تم روشن/تاریک -->
+                <button @click="darkMode = !darkMode" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                    <svg x-show="darkMode" class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg x-show="!darkMode" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
 
-          <form
-            method="post"
-            action="{% url 'logout' %}"
-            class="inline-flex items-center m-0"
-          >
-            {% csrf_token %}
-            <button
-              type="submit"
-              class="text-sm text-red-500 hover:text-red-700 font-medium transition whitespace-nowrap"
-            >
-              خروج
-            </button>
-          </form>
-          {% else %}
-          <a
-            href="{% url 'login' %}"
-            class="text-sm font-medium hover:text-primary transition dark:text-gray-200 whitespace-nowrap"
-            >ورود</a
-          >
-          <span class="text-gray-400">|</span>
-          <a
-            href="{% url 'register' %}"
-            class="text-sm font-medium hover:text-primary transition dark:text-gray-200 whitespace-nowrap"
-            >ثبت‌نام</a
-          >
-          {% endif %}
+                <!-- وضعیت کاربر (ورود/خروج و صندوق پیام) -->
+                {% if user.is_authenticated %}
+                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300 hidden md:block whitespace-nowrap">
+                        خوش آمدی، {{ user.username }}
+                    </span>
+                    <a href="{% url 'inbox' %}" class="text-sm font-medium text-primary hover:underline whitespace-nowrap">صندوق پیام‌ها</a>
+                    <a href="{% url 'dashboard' %}" class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition whitespace-nowrap">پنل کاربری</a>
 
-          <!-- منوی کشویی ثبت آگهی -->
-          <div class="relative" x-data="{ open: false }">
-            <button
-              @click="open = !open"
-              class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:flex items-center gap-2"
-            >
-              ثبت آگهی
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </button>
+                    <form method="post" action="{% url 'logout' %}" class="inline-flex items-center m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="text-sm text-red-500 hover:text-red-700 font-medium transition whitespace-nowrap">خروج</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-sm font-medium hover:text-primary transition dark:text-gray-200 whitespace-nowrap">ورود</a>
+                    <span class="text-gray-400">|</span>
+                    <a href="{% url 'register' %}" class="text-sm font-medium hover:text-primary transition dark:text-gray-200 whitespace-nowrap">ثبت‌نام</a>
+                {% endif %}
 
-            <!-- محتوای منوی کشویی -->
-            <div
-              x-show="open"
-              @click.away="open = false"
-              class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-100 dark:border-gray-700 hidden md:block"
-              style="display: none"
-            >
-              <a
-                href="{% url 'add_car' %}"
-                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >ثبت آگهی خودرو</a
-              >
-              <a
-                href="{% url 'add_part' %}"
-                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >ثبت آگهی قطعه</a
-              >
+                <!-- منوی کشویی ثبت آگهی -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:flex items-center gap-2">
+                        ثبت آگهی
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+
+                    <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-100 dark:border-gray-700 hidden md:block" style="display: none;">
+                        <a href="{% url 'add_car' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">ثبت آگهی خودرو</a>
+                        <a href="{% url 'add_part' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">ثبت آگهی قطعه</a>
+                    </div>
+                </div>
+
             </div>
-          </div>
         </div>
-      </div>
     </header>
 
     <!-- محتوای اصلی صفحات -->
     <main class="min-h-screen container mx-auto px-4 py-8">
-      {% block content %} {% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 
     <!-- فوتر (Footer) -->
-    <footer
-      class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12"
-    >
-      <div
-        class="container mx-auto px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
-      >
-        <p>© ۲۰۲۶ پلتفرم خودرو و قطعات. تمامی حقوق محفوظ است.</p>
-        <div class="mt-4 flex justify-center space-x-4 space-x-reverse">
-          <a href="#" class="hover:text-primary transition">قوانین و مقررات</a>
-          <a href="#" class="hover:text-primary transition">حریم خصوصی</a>
-          <a href="#" class="hover:text-primary transition">تماس با ما</a>
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+        <div class="container mx-auto px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>© ۲۰۲۶ پلتفرم خودرو و قطعات. تمامی حقوق محفوظ است.</p>
+            <div class="mt-4 flex justify-center space-x-4 space-x-reverse">
+                <a href="#" class="hover:text-primary transition">قوانین و مقررات</a>
+                <a href="#" class="hover:text-primary transition">حریم خصوصی</a>
+                <a href="#" class="hover:text-primary transition">تماس با ما</a>
+            </div>
         </div>
-      </div>
     </footer>
-  </body>
+
+</body>
 </html>

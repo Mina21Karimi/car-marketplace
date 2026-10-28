@@ -70,3 +70,25 @@ class Message(models.Model):
     class Meta:
         verbose_name = "پیام"
         verbose_name_plural = "پیام‌ها"
+
+class ConsultationRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'در انتظار بررسی'),
+        ('contacted', 'تماس گرفته شده'),
+        ('completed', 'انجام شده'),
+    )
+
+    name = models.CharField(max_length=100, verbose_name="نام و نام خانوادگی")
+    phone = models.CharField(max_length=15, verbose_name="شماره تماس")
+    subject = models.CharField(max_length=200, verbose_name="موضوع مشاوره")
+    budget = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="بودجه تقریبی (تومان)", null=True, blank=True)
+    description = models.TextField(verbose_name="توضیحات و نیازها")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="وضعیت پیگیری")
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ثبت")
+
+    def __str__(self):
+        return f"مشاوره: {self.name} - {self.subject}"
+
+    class Meta:
+        verbose_name = "درخواست مشاوره"
+        verbose_name_plural = "درخواست‌های مشاوره"

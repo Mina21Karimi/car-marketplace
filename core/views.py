@@ -143,3 +143,17 @@ def delete_part(request, pk):
         part.delete()
         return redirect('dashboard')
     return render(request, 'core/confirm_delete.html', {'object': part, 'type': 'قطعه'})
+from .forms import CarListingForm, PartListingForm, MessageForm, ConsultationForm # ConsultationForm اضافه شود
+
+# ... کدهای قبلی ...
+
+def consultation(request):
+    if request.method == 'POST':
+        form = ConsultationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'core/consultation.html', {'form': ConsultationForm(), 'success': True})
+    else:
+        form = ConsultationForm()
+
+    return render(request, 'core/consultation.html', {'form': form})
