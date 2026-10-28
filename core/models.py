@@ -92,3 +92,30 @@ class ConsultationRequest(models.Model):
     class Meta:
         verbose_name = "درخواست مشاوره"
         verbose_name_plural = "درخواست‌های مشاوره"
+
+class Ticket(models.Model):
+    STATUS_CHOICES = (
+        ('open', 'باز'),
+        ('in_progress', 'در حال بررسی'),
+        ('closed', 'بسته شده'),
+    )
+    PRIORITY_CHOICES = (
+        ('low', 'کم'),
+        ('medium', 'متوسط'),
+        ('high', 'زیاد'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets', verbose_name="کاربر")
+    subject = models.CharField(max_length=200, verbose_name="موضوع")
+    category = models.CharField(max_length=100, verbose_name="دسته‌بندی (مثلاً مالی، فنی)")
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', verbose_name="اولویت")
+    message = models.TextField(verbose_name="متن پیام")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="وضعیت")
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ثبت")
+
+    def __str__(self):
+        return f"تیکت {self.id}: {self.subject}"
+
+    class Meta:
+        verbose_name = "تیکت پشتیبانی"
+        verbose_name_plural = "تیکت‌های پشتیبانی"

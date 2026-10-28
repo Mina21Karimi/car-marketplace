@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}پشتیبانی | پلتفرم خودرو{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md mt-10">
+    <div class="flex justify-between items-center mb-8 border-b pb-4 dark:border-gray-700">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">ثبت تیکت پشتیبانی</h2>
+        <a href="{% url 'my_tickets' %}" class="text-primary hover:underline text-sm font-medium">مشاهده تیکت‌های من</a>
+    </div>
+
+    {% if success %}
+        <div class="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-4 rounded-xl mb-6 text-center font-medium">
+            تیکت شما با موفقیت ثبت شد. کارشناسان ما به زودی بررسی می‌کنند.
+        </div>
+    {% endif %}
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for field in form %}
+            <div class="{% if field.name == 'message' %}md:col-span-2{% endif %}">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="flex justify-center pt-4">
+            <button type="submit" class="px-8 py-3 rounded-xl font-bold text-white bg-primary hover:bg-blue-700 transition shadow-md w-full md:w-auto">
+                ارسال تیکت
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

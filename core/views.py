@@ -157,3 +157,25 @@ def consultation(request):
         form = ConsultationForm()
 
     return render(request, 'core/consultation.html', {'form': form})
+
+from .forms import CarListingForm, PartListingForm, MessageForm, ConsultationForm, TicketForm # TicketForm اضافه شود
+
+# ... کدهای قبلی ...
+
+@login_required(login_url='login')
+def submit_ticket(request):
+    if request.method == 'POST':
+        form = TicketForm(request.POST)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            return render(request, 'core/support.html', {'form': TicketForm(), 'success': True})
+    else:
+        form = TicketForm()
+    return render(request, 'core/support.html', {'form': form})
+
+@login_required(login_url='login')
+def my_tickets(request):
+    tickets = Ticket.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'core/my_tickets.html', {'tickets': tickets})

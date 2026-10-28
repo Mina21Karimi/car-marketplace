@@ -15,4 +15,6 @@ urlpatterns = [
     path('parts/<int:pk>/edit/', views.edit_part, name='edit_part'),
     path('parts/<int:pk>/delete/', views.delete_part, name='delete_part'),
     path('consultation/', views.consultation, name='consultation'),
+    path('support/', views.submit_ticket, name='submit_ticket'),
+    path('my-tickets/', views.my_tickets, name='my_tickets'),
 ]
