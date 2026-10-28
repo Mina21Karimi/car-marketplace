@@ -55,3 +55,18 @@ class PartListing(models.Model):
     class Meta:
         verbose_name = "آگهی قطعه"
         verbose_name_plural = "آگهی‌های قطعات"
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages', verbose_name="فرستنده")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages', verbose_name="گیرنده")
+    car = models.ForeignKey(CarListing, on_delete=models.CASCADE, related_name='messages', verbose_name="درباره خودرو", null=True, blank=True)
+    content = models.TextField(verbose_name="متن پیام")
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ارسال")
+    is_read = models.BooleanField(default=False, verbose_name="خوانده شده")
+
+    def __str__(self):
+        return f"پیام از {self.sender.username} به {self.receiver.username}"
+
+    class Meta:
+        verbose_name = "پیام"
+        verbose_name_plural = "پیام‌ها"

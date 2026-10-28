@@ -33,12 +33,33 @@ def home(request):
     }
     return render(request, 'core/index.html', context)
 
-def car_detail(request, pk):
-    # گرفتن آگهی بر اساس شناسه (id)، اگر پیدا نشد خطای 404 می‌دهد
-    car = get_object_or_404(CarListing, pk=pk)
-    return render(request, 'core/car_detail.html', {'car': car})
+from .forms import CarListingForm, PartListingForm, MessageForm # MessageForm اضافه شود
 
-# ... (توابع add_car و add_part را دست نزنید، همان‌طور که هستند بمانند) ...
+# تابع car_detail را با این جایگزین کنید:
+def car_detail(request, pk):
+    car = get_object_or_404(CarListing, pk=pk)
+    message_form = MessageForm()
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        message_form = MessageForm(request.POST)
+        if message_form.is_valid():
+            message = message_form.save(commit=False)
+            message.sender = request.user
+            message.receiver = car.user # فرستادن به ثبت‌کننده آگهی
+            message.car = car
+            message.save()
+            return redirect('car_detail', pk=car.pk) # رفرش صفحه بعد از ارسال
+
+    return render(request, 'core/car_detail.html', {'car': car, 'message_form': message_form})
+
+@login_required(login_url='login')
+def inbox(request):
+    # گرفتن تمام پیام‌های دریافتی کاربر جاری
+    messages = request.user.received_messages.all().order_by('-created_at')
+    return render(request, 'core/inbox.html', {'messages': messages})
 
 @login_required(login_url='login')
 def add_car(request):
