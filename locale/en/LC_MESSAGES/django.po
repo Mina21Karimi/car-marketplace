@@ -1,0 +1,157 @@
+# English translations for Django project.
+# This file is distributed under the same license as the Django project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: car-marketplace\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 12:00+0330\n"
+"PO-Revision-Date: 2026-10-29 12:00+0330\n"
+"Last-Translator: Sarina Zamani <sarina@example.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/base.html
+msgid "خانه"
+msgstr "Home"
+
+#: templates/base.html
+msgid "خرید خودرو"
+msgstr "Buy Car"
+
+#: templates/base.html
+msgid "فروش خودرو"
+msgstr "Sell Car"
+
+#: templates/base.html
+msgid "قطعات یدکی"
+msgstr "Parts"
+
+#: templates/base.html
+msgid "مشاوره"
+msgstr "Consultation"
+
+#: templates/base.html
+msgid "نمایشگاه‌ها"
+msgstr "Dealerships"
+
+#: templates/base.html
+msgid "ثبت آگهی"
+msgstr "Post Ad"
+
+#: templates/base.html
+msgid "ثبت آگهی خودرو"
+msgstr "Post Car Ad"
+
+#: templates/base.html
+msgid "ثبت آگهی قطعه"
+msgstr "Post Part Ad"
+
+#: templates/base.html
+msgid "منوی دسترسی"
+msgstr "Access Menu"
+
+#: templates/base.html
+msgid "منوی اصلی"
+msgstr "Main Menu"
+
+#: templates/base.html
+msgid "حساب کاربری"
+msgstr "User Account"
+
+#: templates/base.html
+msgid "پنل کاربری من"
+msgstr "My Dashboard"
+
+#: templates/base.html
+msgid "صندوق پیام‌ها"
+msgstr "Inbox"
+
+#: templates/base.html
+msgid "مدیریت سایت"
+msgstr "Admin Panel"
+
+#: templates/base.html
+msgid "خروج از حساب"
+msgstr "Log Out"
+
+#: templates/base.html
+msgid "ورود به حساب"
+msgstr "Log In"
+
+#: templates/base.html
+msgid "ثبت‌نام"
+msgstr "Register"
+
+#: templates/base.html
+msgid "قوانین و مقررات"
+msgstr "Terms & Conditions"
+
+#: templates/base.html
+msgid "حریم خصوصی"
+msgstr "Privacy Policy"
+
+#: templates/base.html
+msgid "پشتیبانی و تماس با ما"
+msgstr "Support & Contact Us"
+
+#: templates/core/index.html
+msgid "صفحه اصلی | پلتفرم خودرو"
+msgstr "Home | Car Platform"
+
+#: templates/core/index.html
+msgid "به پلتفرم خرید و فروش خودرو و قطعات خوش آمدید!"
+msgstr "Welcome to the Car and Parts Marketplace!"
+
+#: templates/core/index.html
+msgid "اولین و بهترین مرجع برای پیدا کردن خودروی مناسب، مقایسه قیمت‌ها و تهیه قطعات یدکی با تضمین اصالت."
+msgstr "The first and best reference for finding the right car, comparing prices, and buying authentic spare parts."
+
+#: templates/core/index.html
+msgid "جستجوی خودرو (مثلاً پژو ۲۰۶)..."
+msgstr "Search cars (e.g., Peugeot 206)..."
+
+#: templates/core/index.html
+msgid "جستجو"
+msgstr "Search"
+
+#: templates/core/index.html
+msgid "نتایج جستجو برای:"
+msgstr "Search results for:"
+
+#: templates/core/index.html
+msgid "جدیدترین خودروها"
+msgstr "Latest Cars"
+
+#: templates/core/index.html
+msgid "مشاهده همه"
+msgstr "View All"
+
+#: templates/core/index.html
+msgid "بدون تصویر"
+msgstr "No Image"
+
+#: templates/core/index.html
+msgid "تومان"
+msgstr "Toman"
+
+#: templates/core/index.html
+msgid "جزئیات"
+msgstr "Details"
+
+#: templates/core/index.html
+msgid "هنوز هیچ آگهی خودرویی ثبت نشده است."
+msgstr "No car listings have been registered yet."
+
+#: templates/core/index.html
+msgid "قطعات پرفروش"
+msgstr "Best-Selling Parts"
+
+#: templates/core/index.html
+msgid "هنوز هیچ قطعه‌ای ثبت نشده است."
+msgstr "No parts have been registered yet."

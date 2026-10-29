@@ -1,5 +1,7 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" class="scroll-smooth">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'fa' %}rtl{% else %}ltr{% endif %}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +29,6 @@
 
     <style>
         [x-cloak] { display: none !important; }
-        /* اسکرول‌بار زیبا برای منوی کناری */
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .dark .sidebar-scroll::-webkit-scrollbar-thumb { background: #475569; }
@@ -58,27 +59,25 @@
 
             <!-- راست: آیکون سه خط و لوگو -->
             <div class="flex items-center gap-4">
-                <!-- دکمه منوی سه خط (فقط در موبایل و تبلت دیده می‌شود، در دسکتاپ هم می‌تواند باشد) -->
                 <button @click="sidebarOpen = true" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                     <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
 
-                <!-- لوگو -->
                 <a href="/" class="text-2xl font-bold text-primary dark:text-blue-400">
                     خودرو<span class="text-gray-800 dark:text-white">مارکت</span>
                 </a>
             </div>
 
-            <!-- وسط: منوی اصلی (فقط در دسکتاپ) -->
+            <!-- وسط: منوی اصلی -->
             <nav class="hidden lg:flex space-x-6 space-x-reverse">
-                <a href="/" class="font-medium hover:text-primary transition dark:text-gray-200">خانه</a>
-                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">خرید خودرو</a>
-                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">فروش خودرو</a>
-                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">قطعات یدکی</a>
-                <a href="{% url 'consultation' %}" class="font-medium hover:text-primary transition dark:text-gray-200">مشاوره</a>
-                <a href="{% url 'dealerships' %}" class="hover:text-primary transition dark:text-gray-200">نمایشگاه‌ها</a>
+                <a href="/" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "خانه" %}</a>
+                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "خرید خودرو" %}</a>
+                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "فروش خودرو" %}</a>
+                <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "قطعات یدکی" %}</a>
+                <a href="{% url 'consultation' %}" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "مشاوره" %}</a>
+                <a href="{% url 'dealerships' %}" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "نمایشگاه‌ها" %}</a>
             </nav>
 
             <!-- چپ: دکمه‌ها -->
@@ -90,15 +89,30 @@
                     <svg x-show="!darkMode" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
 
+                <!-- دکمه تغییر زبان -->
+                <form action="{% url 'set_language' %}" method="post" class="m-0">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.path }}">
+                    <select name="language" onchange="this.form.submit()" class="bg-gray-100 dark:bg-gray-700 text-sm rounded-lg px-2 py-2 border-none focus:ring-0 cursor-pointer dark:text-white">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% for lang_code, lang_name in LANGUAGES %}
+                            <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                                {% if lang_code == 'fa' %}فارسی{% else %}English{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+
                 <!-- منوی کشویی ثبت آگهی -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md hidden md:flex items-center gap-2">
-                        ثبت آگهی
+                        {% translate "ثبت آگهی" %}
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-100 dark:border-gray-700 hidden md:block" style="display: none;">
-                        <a href="{% url 'add_car' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">ثبت آگهی خودرو</a>
-                        <a href="{% url 'add_part' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">ثبت آگهی قطعه</a>
+                        <a href="{% url 'add_car' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{% translate "ثبت آگهی خودرو" %}</a>
+                        <a href="{% url 'add_part' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">{% translate "ثبت آگهی قطعه" %}</a>
                     </div>
                 </div>
 
@@ -109,70 +123,61 @@
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ user.username }}</span>
                     </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="hidden md:block text-sm font-medium hover:text-primary transition dark:text-gray-200 ml-2">ورود / ثبت‌نام</a>
+                    <a href="{% url 'login' %}" class="hidden md:block text-sm font-medium hover:text-primary transition dark:text-gray-200 ml-2">{% translate "ورود / ثبت‌نام" %}</a>
                 {% endif %}
 
             </div>
         </div>
     </header>
 
-    <!-- پنل کناری (Sidebar) که از سمت راست باز می‌شود -->
+    <!-- پنل کناری (Sidebar) -->
     <div x-show="sidebarOpen" class="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-cloak>
         <div class="absolute inset-0 overflow-hidden">
-            <!-- پس‌زمینه تاریک (Overlay) -->
             <div x-show="sidebarOpen" x-transition:enter="ease-in-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" @click="sidebarOpen = false"></div>
 
             <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                <!-- محتوای پنل (اسلاید از راست) -->
                 <div x-show="sidebarOpen" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="pointer-events-auto w-screen max-w-md">
                     <div class="flex h-full flex-col bg-white dark:bg-gray-800 shadow-2xl">
 
-                        <!-- هدر پنل -->
                         <div class="flex items-center justify-between px-4 py-5 border-b border-gray-100 dark:border-gray-700">
-                            <h2 class="text-xl font-bold text-gray-800 dark:text-white">منوی دسترسی</h2>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-white">{% translate "منوی دسترسی" %}</h2>
                             <button @click="sidebarOpen = false" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                                 <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
 
-                        <!-- محتوای اسکرول‌شونده -->
                         <div class="flex-1 overflow-y-auto sidebar-scroll p-4">
-
-                            <!-- لینک‌های عمومی -->
                             <div class="mb-6">
-                                <h3 class="text-xs font-bold text-gray-400 mb-3 px-2">منوی اصلی</h3>
-                                <a href="/" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">خانه</a>
-                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">خرید خودرو</a>
-                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">فروش خودرو</a>
-                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">قطعات یدکی</a>
-                                <a href="{% url 'consultation' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">مشاوره</a>
-                                <a href="{% url 'dealerships' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">نمایشگاه‌ها</a>
+                                <h3 class="text-xs font-bold text-gray-400 mb-3 px-2">{% translate "منوی اصلی" %}</h3>
+                                <a href="/" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "خانه" %}</a>
+                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "خرید خودرو" %}</a>
+                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "فروش خودرو" %}</a>
+                                <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "قطعات یدکی" %}</a>
+                                <a href="{% url 'consultation' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "مشاوره" %}</a>
+                                <a href="{% url 'dealerships' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "نمایشگاه‌ها" %}</a>
                             </div>
 
-                            <!-- بخش کاربر (اگر لاگین باشد) -->
                             {% if user.is_authenticated %}
                                 <div class="mb-6 border-t border-gray-100 dark:border-gray-700 pt-6">
-                                    <h3 class="text-xs font-bold text-gray-400 mb-3 px-2">حساب کاربری</h3>
-                                    <a href="{% url 'dashboard' %}" class="block px-3 py-2.5 rounded-xl text-primary font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition mb-1">پنل کاربری من</a>
-                                    <a href="{% url 'inbox' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">صندوق پیام‌ها</a>
+                                    <h3 class="text-xs font-bold text-gray-400 mb-3 px-2">{% translate "حساب کاربری" %}</h3>
+                                    <a href="{% url 'dashboard' %}" class="block px-3 py-2.5 rounded-xl text-primary font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition mb-1">{% translate "پنل کاربری من" %}</a>
+                                    <a href="{% url 'inbox' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "صندوق پیام‌ها" %}</a>
 
                                     {% if user.is_staff %}
-                                        <a href="{% url 'staff_dashboard' %}" class="block px-3 py-2.5 rounded-xl text-red-500 font-bold bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition mt-2">مدیریت سایت</a>
+                                        <a href="{% url 'staff_dashboard' %}" class="block px-3 py-2.5 rounded-xl text-red-500 font-bold bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition mt-2">{% translate "مدیریت سایت" %}</a>
                                     {% endif %}
                                 </div>
 
-                                <!-- دکمه خروج -->
                                 <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
                                     <form method="post" action="{% url 'logout' %}" class="m-0">
                                         {% csrf_token %}
-                                        <button type="submit" class="w-full text-right px-3 py-2.5 text-red-500 hover:text-red-700 font-medium rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition">خروج از حساب</button>
+                                        <button type="submit" class="w-full text-right px-3 py-2.5 text-red-500 hover:text-red-700 font-medium rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition">{% translate "خروج از حساب" %}</button>
                                     </form>
                                 </div>
                             {% else %}
-                                <!-- دکمه‌های ورود/ثبت‌نام برای مهمان -->
                                 <div class="border-t border-gray-100 dark:border-gray-700 pt-6 flex flex-col gap-3">
-                                    <a href="{% url 'login' %}" class="block text-center bg-primary text-white px-3 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition">ورود به حساب</a>
-                                    <a href="{% url 'register' %}" class="block text-center bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-2.5 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition">ثبت‌نام</a>
+                                    <a href="{% url 'login' %}" class="block text-center bg-primary text-white px-3 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition">{% translate "ورود به حساب" %}</a>
+                                    <a href="{% url 'register' %}" class="block text-center bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-2.5 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition">{% translate "ثبت‌نام" %}</a>
                                 </div>
                             {% endif %}
 
@@ -190,31 +195,28 @@
     </main>
 
     <!-- فوتر (Footer) -->
-    <!-- فوتر (Footer) -->
     <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
         <div class="container mx-auto px-4 py-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <!-- لینک‌های سایت -->
                 <div class="flex gap-4 text-sm text-gray-500 dark:text-gray-400">
-                    <a href="{% url 'dealerships' %}" class="hover:text-primary transition">نمایشگاه‌ها</a>
-                    <a href="#" class="hover:text-primary transition">قوانین</a>
-                    <a href="{% url 'submit_ticket' %}" class="hover:text-primary transition">پشتیبانی</a>
+                    <a href="{% url 'dealerships' %}" class="hover:text-primary transition">{% translate "نمایشگاه‌ها" %}</a>
+                    <a href="#" class="hover:text-primary transition">{% translate "قوانین و مقررات" %}</a>
+                    <a href="{% url 'submit_ticket' %}" class="hover:text-primary transition">{% translate "پشتیبانی و تماس با ما" %}</a>
                 </div>
 
-                <!-- لینک کانال ایتا (از دیتابیس خوانده می‌شود) -->
                 <div class="flex items-center gap-4">
                     {% if site_settings and site_settings.eitaa_link %}
-                        <span class="text-sm text-gray-500">ما را در ایتا دنبال کنید:</span>
+                        <span class="text-sm text-gray-500">{% translate "ما را در ایتا دنبال کنید:" %}</span>
                         <a href="{{ site_settings.eitaa_link }}" target="_blank" class="bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-400 font-bold px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition flex items-center gap-2">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-3H8v-3h3v-3h3v3h3v3h-3v3h-3z"/></svg>
-                            کانال ایتا
+                            {% translate "کانال ایتا" %}
                         </a>
                     {% endif %}
                 </div>
             </div>
 
             <div class="mt-8 text-center text-sm text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-6">
-                <p>© ۲۰۲۶ پلتفرم خودرو و قطعات. تمامی حقوق محفوظ است.</p>
+                <p>© ۲۰۲۶ {% translate "پلتفرم خودرو و قطعات. تمامی حقوق محفوظ است." %}</p>
             </div>
         </div>
     </footer>
