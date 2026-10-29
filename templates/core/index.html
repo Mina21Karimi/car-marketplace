@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% translate "صفحه اصلی | پلتفرم خودرو" %}{% endblock %}
+{% block title %}خرید و فروش خودرو و قطعات | خودرومارکت{% endblock %}
+{% block meta_description %}جدیدترین آگهی‌های خودرو و قطعات یدکی با قیمت‌های واقعی. خرید و فروش آسان در بزرگترین بازارگاه خودرو ایران.{% endblock %}
+{% block og_title %}خودرومارکت | بازارگاه خودرو و قطعات{% endblock %}
+{% block og_description %}جدیدترین آگهی‌های خودرو و قطعات یدکی را با بهترین قیمت‌ها مشاهده کنید.{% endblock %}
 
 {% block content %}
 <!-- بخش خوش‌آمدگویی -->
@@ -37,7 +40,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
             <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
                 {% if car.image %}
-                    <img src="{{ car.image.url }}" alt="{{ car.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="{{ car.image.url }}" alt="{{ car.title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 {% else %}
                     <div class="flex items-center justify-center h-full text-gray-400">{% translate "بدون تصویر" %}</div>
                 {% endif %}
@@ -75,7 +78,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
             <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
                 {% if part.image %}
-                    <img src="{{ part.image.url }}" alt="{{ part.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="{{ part.image.url }}" alt="{{ part.name }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 {% else %}
                     <div class="flex items-center justify-center h-full text-gray-400">{% translate "بدون تصویر" %}</div>
                 {% endif %}

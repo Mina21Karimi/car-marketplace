@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /dashboard/
+Disallow: /inbox/
+Disallow: /management/
+Disallow: /support/
+Disallow: /my-tickets/
+
+Sitemap: http://127.0.0.1:8000/sitemap.xml
