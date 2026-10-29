@@ -119,3 +119,29 @@ class Ticket(models.Model):
     class Meta:
         verbose_name = "تیکت پشتیبانی"
         verbose_name_plural = "تیکت‌های پشتیبانی"
+
+class Dealership(models.Model):
+    name = models.CharField(max_length=200, verbose_name="نام نمایشگاه")
+    city = models.CharField(max_length=100, verbose_name="شهر")
+    address = models.TextField(verbose_name="آدرس دقیق")
+    phone = models.CharField(max_length=20, verbose_name="شماره تماس")
+    working_hours = models.CharField(max_length=100, verbose_name="ساعات کاری", blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ثبت")
+
+    def __str__(self):
+        return f"{self.name} - {self.city}"
+
+    class Meta:
+        verbose_name = "نمایشگاه خودرو"
+        verbose_name_plural = "نمایشگاه‌های خودرو"
+
+
+class SiteSetting(models.Model):
+    # این مدل فقط یک رکورد خواهد داشت (تنظیمات کلی سایت)
+    eitaa_link = models.URLField(verbose_name="لینک کانال ایتا", blank=True, null=True, help_text="لینک کامل کانال ایتا را وارد کنید (مثلاً https://eitaa.com/your_channel)")
+    contact_phone = models.CharField(max_length=20, verbose_name="شماره تماس پشتیبانی", blank=True, null=True)
+    contact_email = models.EmailField(verbose_name="ایمیل پشتیبانی", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "تنظیمات سایت"
+        verbose_name_plural = "تنظیمات سایت"

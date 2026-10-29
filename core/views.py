@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404 # get_object_or_404 اضافه شد
 from django.contrib.auth.decorators import login_required
-from .models import CarListing, PartListing
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket
 from .forms import CarListingForm, PartListingForm
-from django.db.models import Q # برای جستجوی پیشرفته
+from django.db.models import Q
+from django.contrib.auth.models import User# برای جستجوی پیشرفته
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting
 
 def home(request):
     query = request.GET.get('q') # دریافت عبارت جستجو از URL
@@ -74,8 +76,6 @@ def add_car(request):
         form = CarListingForm()
 
     return render(request, 'core/add_car.html', {'form': form})
-
-from .forms import CarListingForm, PartListingForm # PartListingForm اضافه شود
 
 @login_required(login_url='login')
 def add_part(request):
@@ -179,3 +179,35 @@ def submit_ticket(request):
 def my_tickets(request):
     tickets = Ticket.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'core/my_tickets.html', {'tickets': tickets})
+
+@login_required(login_url='login')
+def staff_dashboard(request):
+    # بررسی اینکه آیا کاربر مدیر است یا خیر
+    if not request.user.is_staff:
+        return redirect('home') # اگر مدیر نبود، به صفحه اصلی برود
+
+    # گرفتن آمار کلی
+    total_users = User.objects.count()
+    total_cars = CarListing.objects.count()
+    total_parts = PartListing.objects.count()
+    open_tickets = Ticket.objects.filter(status='open').count()
+    total_consultations = ConsultationRequest.objects.count()
+
+    # گرفتن ۵ مورد آخر برای نمایش در جدول
+    recent_cars = CarListing.objects.order_by('-created_at')[:5]
+    recent_tickets = Ticket.objects.order_by('-created_at')[:5]
+
+    context = {
+        'total_users': total_users,
+        'total_cars': total_cars,
+        'total_parts': total_parts,
+        'open_tickets': open_tickets,
+        'total_consultations': total_consultations,
+        'recent_cars': recent_cars,
+        'recent_tickets': recent_tickets,
+    }
+    return render(request, 'core/staff_dashboard.html', context)
+
+def dealerships(request):
+    all_dealerships = Dealership.objects.all().order_by('-created_at')
+    return render(request, 'core/dealerships.html', {'dealerships': all_dealerships})
