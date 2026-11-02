@@ -2,26 +2,47 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
+# ==========================================
+# بخش خودروها و گالری تصاویر
+# ==========================================
 class CarListing(models.Model):
     STATUS_CHOICES = (
         ('draft', 'پیش‌نویس'),
         ('published', 'منتشر شده'),
         ('sold', 'فروخته شده'),
     )
+    GEARBOX_TYPE_CHOICES = (
+        ('manual', 'دنده‌ای'),
+        ('automatic', 'اتوماتیک'),
+    )
+    ENGINE_STATUS_CHOICES = (
+        ('healthy', 'سالم'),
+        ('needs_repair', 'نیاز به تعمیر'),
+        ('replaced', 'تعویض شده'),
+    )
+    GEARBOX_STATUS_CHOICES = (
+        ('healthy', 'سالم'),
+        ('needs_repair', 'نیاز به تعمیر'),
+    )
 
     title = models.CharField(max_length=200, verbose_name="عنوان آگهی")
-    from django.contrib.auth.models import User # این خط را بالای فایل اضافه کنید
-
-# ... (داخل کلاس CarListing)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
     brand = models.CharField(max_length=100, verbose_name="برند")
     model = models.CharField(max_length=100, verbose_name="مدل")
     year = models.IntegerField(verbose_name="سال ساخت")
     mileage = models.IntegerField(verbose_name="کارکرد (کیلومتر)")
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="قیمت (تومان)")
+
+    chassis_number = models.CharField(max_length=100, blank=True, null=True, verbose_name="شاسی")
+    color = models.CharField(max_length=50, blank=True, null=True, verbose_name="رنگ")
+    engine_status = models.CharField(max_length=50, choices=ENGINE_STATUS_CHOICES, default='healthy', verbose_name="وضعیت موتور")
+    gearbox_type = models.CharField(max_length=50, choices=GEARBOX_TYPE_CHOICES, default='manual', verbose_name="نوع گیربکس")
+    gearbox_status = models.CharField(max_length=50, choices=GEARBOX_STATUS_CHOICES, default='healthy', verbose_name="وضعیت گیربکس")
+    is_exchangeable = models.BooleanField(default=False, verbose_name="امکان معاوضه")
+
     description = models.TextField(verbose_name="توضیحات")
-    image = models.ImageField(upload_to='cars/', blank=True, null=True, verbose_name="تصویر خودرو")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='published', verbose_name="وضعیت")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ثبت")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="آخرین به‌روزرسانی")
 
@@ -33,13 +54,28 @@ class CarListing(models.Model):
         verbose_name_plural = "آگهی‌های خودرو"
 
 
+class CarImage(models.Model):
+    car = models.ForeignKey(CarListing, related_name='images', on_delete=models.CASCADE, verbose_name="خودرو")
+    image = models.ImageField(upload_to='cars/gallery/', verbose_name="تصویر")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "تصویر خودرو"
+        verbose_name_plural = "تصاویر خودرو (گالری)"
+
+    def __str__(self):
+        return f"تصویر برای {self.car.title}"
+
+
+# ==========================================
+# بخش قطعات یدکی
+# ==========================================
 class PartListing(models.Model):
     STATUS_CHOICES = (
         ('new', 'نو'),
         ('used', 'دست دوم'),
     )
-# داخل کلاس PartListing، بعد از خط name:
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
+
     name = models.CharField(max_length=200, verbose_name="نام قطعه")
     brand = models.CharField(max_length=100, verbose_name="برند سازنده")
     part_number = models.CharField(max_length=100, blank=True, null=True, verbose_name="شماره فنی قطعه")
@@ -47,6 +83,7 @@ class PartListing(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="قیمت (تومان)")
     description = models.TextField(verbose_name="توضیحات")
     image = models.ImageField(upload_to='parts/', blank=True, null=True, verbose_name="تصویر قطعه")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کاربر ثبت‌کننده", null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ ثبت")
 
     def __str__(self):
@@ -56,6 +93,10 @@ class PartListing(models.Model):
         verbose_name = "آگهی قطعه"
         verbose_name_plural = "آگهی‌های قطعات"
 
+
+# ==========================================
+# بخش پیام‌رسانی
+# ==========================================
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages', verbose_name="فرستنده")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages', verbose_name="گیرنده")
@@ -71,6 +112,10 @@ class Message(models.Model):
         verbose_name = "پیام"
         verbose_name_plural = "پیام‌ها"
 
+
+# ==========================================
+# بخش درخواست مشاوره
+# ==========================================
 class ConsultationRequest(models.Model):
     STATUS_CHOICES = (
         ('pending', 'در انتظار بررسی'),
@@ -93,6 +138,10 @@ class ConsultationRequest(models.Model):
         verbose_name = "درخواست مشاوره"
         verbose_name_plural = "درخواست‌های مشاوره"
 
+
+# ==========================================
+# بخش پشتیبانی (تیکت)
+# ==========================================
 class Ticket(models.Model):
     STATUS_CHOICES = (
         ('open', 'باز'),
@@ -120,6 +169,10 @@ class Ticket(models.Model):
         verbose_name = "تیکت پشتیبانی"
         verbose_name_plural = "تیکت‌های پشتیبانی"
 
+
+# ==========================================
+# بخش نمایشگاه‌ها
+# ==========================================
 class Dealership(models.Model):
     name = models.CharField(max_length=200, verbose_name="نام نمایشگاه")
     city = models.CharField(max_length=100, verbose_name="شهر")
@@ -136,8 +189,10 @@ class Dealership(models.Model):
         verbose_name_plural = "نمایشگاه‌های خودرو"
 
 
+# ==========================================
+# بخش تنظیمات سایت (لینک ایتا و ...)
+# ==========================================
 class SiteSetting(models.Model):
-    # این مدل فقط یک رکورد خواهد داشت (تنظیمات کلی سایت)
     eitaa_link = models.URLField(verbose_name="لینک کانال ایتا", blank=True, null=True, help_text="لینک کامل کانال ایتا را وارد کنید (مثلاً https://eitaa.com/your_channel)")
     contact_phone = models.CharField(max_length=20, verbose_name="شماره تماس پشتیبانی", blank=True, null=True)
     contact_email = models.EmailField(verbose_name="ایمیل پشتیبانی", blank=True, null=True)
@@ -145,3 +200,17 @@ class SiteSetting(models.Model):
     class Meta:
         verbose_name = "تنظیمات سایت"
         verbose_name_plural = "تنظیمات سایت"
+
+
+# ==========================================
+# بخش علاقه‌مندی‌ها (Wishlist)
+# ==========================================
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites', verbose_name="کاربر")
+    car = models.ForeignKey(CarListing, on_delete=models.CASCADE, null=True, blank=True, verbose_name="خودرو")
+    part = models.ForeignKey(PartListing, on_delete=models.CASCADE, null=True, blank=True, verbose_name="قطعه")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ذخیره")
+
+    class Meta:
+        verbose_name = "علاقه‌مندی"
+        verbose_name_plural = "علاقه‌مندی‌ها"

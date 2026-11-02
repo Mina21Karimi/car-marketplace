@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}علاقه‌مندی‌های من{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-8">
+    <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 border-r-4 border-red-500 pr-3">آگهی‌های مورد علاقه من</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for fav in favorites %}
+            {% if fav.car %}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden group">
+                <div class="h-48 bg-gray-200 dark:bg-gray-700 relative">
+                    {% if fav.car.image %}
+                        <img src="{{ fav.car.image.url }}" alt="{{ fav.car.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="flex items-center justify-center h-full text-gray-400">بدون تصویر</div>
+                    {% endif %}
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-gray-800 dark:text-white mb-2">{{ fav.car.title }}</h3>
+                    <p class="text-primary font-bold">{{ fav.car.price|floatformat:"0" }} تومان</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <a href="{% url 'car_detail' fav.car.pk %}" class="text-sm bg-blue-50 text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition">مشاهده جزئیات</a>
+                        <a href="{% url 'toggle_favorite' fav.car.pk %}" class="text-red-500 text-sm font-medium hover:underline">حذف از علاقه‌مندی‌ها</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% empty %}
+        <div class="col-span-full text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
+            <p class="text-gray-500">هنوز هیچ آگهی را به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

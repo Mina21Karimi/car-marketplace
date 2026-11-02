@@ -1,25 +1,31 @@
-from django.shortcuts import render, redirect, get_object_or_404 # get_object_or_404 اضافه شد
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket
-from .forms import CarListingForm, PartListingForm
+from django.contrib.auth.models import User
 from django.db.models import Q
-from django.contrib.auth.models import User# برای جستجوی پیشرفته
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting
+from django.utils import timezone
+from .models import (
+    CarListing, PartListing, Message, ConsultationRequest,
+    Ticket, Dealership, SiteSetting, Favorite, CarImage
+)
+from .forms import (
+    CarListingForm, PartListingForm, MessageForm,
+    ConsultationForm, TicketForm
+)
 
+# ==========================================
+# بخش صفحه اصلی و جستجو
+# ==========================================
 def home(request):
-    query = request.GET.get('q') # دریافت عبارت جستجو از URL
-
+    query = request.GET.get('q', '')
     cars = CarListing.objects.filter(status='published')
     parts = PartListing.objects.all()
 
     if query:
-        # جستجو در عنوان، برند و مدل خودرو
         cars = cars.filter(
             Q(title__icontains=query) |
             Q(brand__icontains=query) |
             Q(model__icontains=query)
         )
-        # جستجو در نام و برند قطعات
         parts = parts.filter(
             Q(name__icontains=query) |
             Q(brand__icontains=query)
@@ -31,16 +37,21 @@ def home(request):
     context = {
         'cars': cars,
         'parts': parts,
-        'query': query, # ارسال عبارت جستجو به قالب
+        'query': query,
     }
     return render(request, 'core/index.html', context)
 
-from .forms import CarListingForm, PartListingForm, MessageForm # MessageForm اضافه شود
-
-# تابع car_detail را با این جایگزین کنید:
+# ==========================================
+# بخش خودروها (نمایش، ثبت، ویرایش، حذف)
+# ==========================================
 def car_detail(request, pk):
     car = get_object_or_404(CarListing, pk=pk)
     message_form = MessageForm()
+
+    # بررسی وضعیت علاقه‌مندی کاربر
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, car=car).exists()
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -50,18 +61,16 @@ def car_detail(request, pk):
         if message_form.is_valid():
             message = message_form.save(commit=False)
             message.sender = request.user
-            message.receiver = car.user # فرستادن به ثبت‌کننده آگهی
+            message.receiver = car.user
             message.car = car
             message.save()
-            return redirect('car_detail', pk=car.pk) # رفرش صفحه بعد از ارسال
+            return redirect('car_detail', pk=car.pk)
 
-    return render(request, 'core/car_detail.html', {'car': car, 'message_form': message_form})
-
-@login_required(login_url='login')
-def inbox(request):
-    # گرفتن تمام پیام‌های دریافتی کاربر جاری
-    messages = request.user.received_messages.all().order_by('-created_at')
-    return render(request, 'core/inbox.html', {'messages': messages})
+    return render(request, 'core/car_detail.html', {
+        'car': car,
+        'message_form': message_form,
+        'is_favorite': is_favorite
+    })
 
 @login_required(login_url='login')
 def add_car(request):
@@ -69,48 +78,36 @@ def add_car(request):
         form = CarListingForm(request.POST, request.FILES)
         if form.is_valid():
             car = form.save(commit=False)
-            car.user = request.user # ثبت آگهی به نام کاربر لاگین شده
+            car.user = request.user
             car.save()
+
+            # گرفتن و ذخیره عکس‌های گالری (حداکثر ۷ عدد)
+            images = request.FILES.getlist('gallery_images')
+            for img in images[:7]:
+                CarImage.objects.create(car=car, image=img)
+
             return redirect('home')
     else:
         form = CarListingForm()
-
     return render(request, 'core/add_car.html', {'form': form})
 
 @login_required(login_url='login')
-def add_part(request):
-    if request.method == 'POST':
-        form = PartListingForm(request.POST, request.FILES)
-        if form.is_valid():
-            part = form.save(commit=False)
-            part.user = request.user
-            part.save()
-            return redirect('home')
-    else:
-        form = PartListingForm()
-
-    return render(request, 'core/add_part.html', {'form': form})
-
-# ... (کدهای قبلی) ...
-
-@login_required(login_url='login')
-def dashboard(request):
-    # گرفتن آگهی‌های خودرو و قطعه‌ای که کاربر جاری ثبت کرده است
-    user_cars = CarListing.objects.filter(user=request.user).order_by('-created_at')
-    user_parts = PartListing.objects.filter(user=request.user).order_by('-created_at')
-
-    return render(request, 'core/dashboard.html', {
-        'user_cars': user_cars,
-        'user_parts': user_parts
-    })
-
-@login_required(login_url='login')
 def edit_car(request, pk):
-    car = get_object_or_404(CarListing, pk=pk, user=request.user) # فقط صاحب آگهی می‌تواند ویرایش کند
+    car = get_object_or_404(CarListing, pk=pk, user=request.user)
     if request.method == 'POST':
         form = CarListingForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
             form.save()
+
+            # اگر در حالت ویرایش عکس جدید آپلود شد، به گالری اضافه کن
+            new_images = request.FILES.getlist('gallery_images')
+            # بررسی کنیم مجموع عکس‌ها بیشتر از ۷ نشود
+            current_count = car.images.count()
+            for img in new_images:
+                if current_count < 7:
+                    CarImage.objects.create(car=car, image=img)
+                    current_count += 1
+
             return redirect('dashboard')
     else:
         form = CarListingForm(instance=car)
@@ -123,6 +120,22 @@ def delete_car(request, pk):
         car.delete()
         return redirect('dashboard')
     return render(request, 'core/confirm_delete.html', {'object': car, 'type': 'خودرو'})
+
+# ==========================================
+# بخش قطعات (ثبت، ویرایش، حذف)
+# ==========================================
+@login_required(login_url='login')
+def add_part(request):
+    if request.method == 'POST':
+        form = PartListingForm(request.POST, request.FILES)
+        if form.is_valid():
+            part = form.save(commit=False)
+            part.user = request.user
+            part.save()
+            return redirect('home')
+    else:
+        form = PartListingForm()
+    return render(request, 'core/add_part.html', {'form': form})
 
 @login_required(login_url='login')
 def edit_part(request, pk):
@@ -143,10 +156,45 @@ def delete_part(request, pk):
         part.delete()
         return redirect('dashboard')
     return render(request, 'core/confirm_delete.html', {'object': part, 'type': 'قطعه'})
-from .forms import CarListingForm, PartListingForm, MessageForm, ConsultationForm # ConsultationForm اضافه شود
 
-# ... کدهای قبلی ...
+# ==========================================
+# بخش پنل کاربری و پیام‌ها
+# ==========================================
+@login_required(login_url='login')
+def dashboard(request):
+    user_cars = CarListing.objects.filter(user=request.user).order_by('-created_at')
+    user_parts = PartListing.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'core/dashboard.html', {
+        'user_cars': user_cars,
+        'user_parts': user_parts
+    })
 
+@login_required(login_url='login')
+def inbox(request):
+    messages = request.user.received_messages.all().order_by('-created_at')
+    return render(request, 'core/inbox.html', {'messages': messages})
+
+# ==========================================
+# بخش علاقه‌مندی‌ها (Wishlist)
+# ==========================================
+@login_required(login_url='login')
+def toggle_favorite(request, pk):
+    car = get_object_or_404(CarListing, pk=pk)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, car=car)
+
+    if not created:
+        favorite.delete()
+
+    return redirect('car_detail', pk=car.pk)
+
+@login_required(login_url='login')
+def my_favorites(request):
+    favorites = Favorite.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'core/my_favorites.html', {'favorites': favorites})
+
+# ==========================================
+# بخش مشاوره و پشتیبانی
+# ==========================================
 def consultation(request):
     if request.method == 'POST':
         form = ConsultationForm(request.POST)
@@ -155,12 +203,7 @@ def consultation(request):
             return render(request, 'core/consultation.html', {'form': ConsultationForm(), 'success': True})
     else:
         form = ConsultationForm()
-
     return render(request, 'core/consultation.html', {'form': form})
-
-from .forms import CarListingForm, PartListingForm, MessageForm, ConsultationForm, TicketForm # TicketForm اضافه شود
-
-# ... کدهای قبلی ...
 
 @login_required(login_url='login')
 def submit_ticket(request):
@@ -180,20 +223,20 @@ def my_tickets(request):
     tickets = Ticket.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'core/my_tickets.html', {'tickets': tickets})
 
+# ==========================================
+# بخش مدیریت، نمایشگاه‌ها و تنظیمات
+# ==========================================
 @login_required(login_url='login')
 def staff_dashboard(request):
-    # بررسی اینکه آیا کاربر مدیر است یا خیر
     if not request.user.is_staff:
-        return redirect('home') # اگر مدیر نبود، به صفحه اصلی برود
+        return redirect('home')
 
-    # گرفتن آمار کلی
     total_users = User.objects.count()
     total_cars = CarListing.objects.count()
     total_parts = PartListing.objects.count()
     open_tickets = Ticket.objects.filter(status='open').count()
     total_consultations = ConsultationRequest.objects.count()
 
-    # گرفتن ۵ مورد آخر برای نمایش در جدول
     recent_cars = CarListing.objects.order_by('-created_at')[:5]
     recent_tickets = Ticket.objects.order_by('-created_at')[:5]
 

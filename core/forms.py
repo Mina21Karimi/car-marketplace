@@ -1,24 +1,63 @@
 from django import forms
-from .models import CarListing
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket
 
+# ==========================================
+# ویجت سفارشی برای آپلود چند فایل (حل مشکل جنگو)
+# ==========================================
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+# ==========================================
+# فرم ثبت آگهی خودرو
+# ==========================================
 class CarListingForm(forms.ModelForm):
+    # استفاده از فیلد سفارشی برای گالری
+    gallery_images = MultipleFileField(
+        widget=MultipleFileInput(attrs={
+            'multiple': True,
+            'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
+        }),
+        required=False,
+        label="گالری تصاویر (حداکثر ۷ عکس)",
+        help_text="می‌توانید با نگه داشتن کلید Ctrl، چند عکس را همزمان انتخاب کنید."
+    )
+
     class Meta:
         model = CarListing
-        fields = ['title', 'brand', 'model', 'year', 'mileage', 'price', 'description', 'image']
+        fields = [
+            'title', 'brand', 'model', 'year', 'mileage', 'price',
+            'chassis_number', 'color', 'engine_status', 'gearbox_type',
+            'gearbox_status', 'is_exchangeable', 'description'
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # اضافه کردن کلاس‌های Tailwind به تمام فیلدها
         for field_name, field in self.fields.items():
-            field.widget.attrs.update({
-                'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
-            })
+            if field_name == 'is_exchangeable':
+                field.widget.attrs.update({
+                    'class': 'w-5 h-5 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                })
+            elif field_name != 'gallery_images':
+                field.widget.attrs.update({
+                    'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
+                })
 
-from django import forms
-from .models import CarListing, PartListing # PartListing اضافه شود
-
-# ... (کلاس CarListingForm را دست نزنید) ...
-
+# ==========================================
+# فرم ثبت آگهی قطعه
+# ==========================================
 class PartListingForm(forms.ModelForm):
     class Meta:
         model = PartListing
@@ -31,8 +70,9 @@ class PartListingForm(forms.ModelForm):
                 'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
             })
 
-from .models import CarListing, PartListing, Message # Message اضافه شود
-
+# ==========================================
+# فرم پیام
+# ==========================================
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
@@ -41,10 +81,9 @@ class MessageForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'پیام خود را بنویسید...', 'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'})
         }
 
-from .models import CarListing, PartListing, Message, ConsultationRequest # ConsultationRequest اضافه شود
-
-# ... کدهای قبلی ...
-
+# ==========================================
+# فرم مشاوره
+# ==========================================
 class ConsultationForm(forms.ModelForm):
     class Meta:
         model = ConsultationRequest
@@ -59,10 +98,10 @@ class ConsultationForm(forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
             })
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket # Ticket اضافه شود
 
-# ... کدهای قبلی ...
-
+# ==========================================
+# فرم تیکت پشتیبانی
+# ==========================================
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket

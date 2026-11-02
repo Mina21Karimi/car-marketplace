@@ -1,150 +1,157 @@
-{% extends 'base.html' %} {% block title %}{{ car.title }} | پلتفرم خودرو{%
-endblock %} {% block content %}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ car.title }} | {% translate "پلتفرم خودرو" %}{% endblock %}
+
+{% block content %}
 <div class="max-w-5xl mx-auto mt-8">
-  <!-- دکمه بازگشت -->
-  <a
-    href="{% url 'home' %}"
-    class="inline-flex items-center text-primary hover:underline mb-6"
-  >
-    <svg
-      class="w-4 h-4 ml-1"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M9 5l7 7-7 7"
-      ></path>
-    </svg>
-    بازگشت به صفحه اصلی
-  </a>
+    <!-- دکمه بازگشت -->
+    <a href="{% url 'home' %}" class="inline-flex items-center text-primary hover:underline mb-6">
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        {% translate "بازگشت به صفحه اصلی" %}
+    </a>
 
-  <div
-    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700"
-  >
-    <div class="grid grid-cols-1 md:grid-cols-2">
-      <!-- بخش تصویر -->
-      <div
-        class="h-72 md:h-full min-h-[400px] bg-gray-200 dark:bg-gray-900 relative"
-      >
-        {% if car.image %}
-        <img
-          src="{{ car.image.url }}"
-          alt="{{ car.title }}"
-          class="w-full h-full object-cover absolute inset-0"
-        />
-        {% else %}
-        <div class="flex items-center justify-center h-full text-gray-400">
-          تصویری ثبت نشده است
-        </div>
-        {% endif %}
-        <span
-          class="absolute top-4 right-4 bg-primary text-white text-sm px-3 py-1 rounded-md shadow-md"
-          >{{ car.get_status_display }}</span
-        >
-      </div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="grid grid-cols-1 md:grid-cols-2">
 
-      <!-- بخش اطلاعات -->
-      <div class="p-8 flex flex-col justify-between">
-        <div>
-          <h1
-            class="text-3xl font-extrabold text-gray-900 dark:text-white mb-4"
-          >
-            {{ car.title }}
-          </h1>
-          <p
-            class="text-2xl font-bold text-primary dark:text-blue-400 mb-6 border-b pb-6 dark:border-gray-700"
-          >
-            {{ car.price|floatformat:"0" }}
-            <span class="text-sm font-normal text-gray-500">تومان</span>
-          </p>
+            <!-- بخش گالری تصاویر (اسلایدر) -->
+            <!-- تغییر مهم: رنگ پس‌زمینه کادر به مشکی تغییر کرد تا عکس‌های با ابعاد مختلف زیبا دیده شوند -->
+            <div class="h-72 md:h-[500px] bg-gray-900 relative flex flex-col" x-data="{ activeSlide: 1, totalSlides: {{ car.images.count|default:1 }} }">
+                {% if car.images.all %}
+                    <!-- تصاویر اصلی -->
+                    <div class="relative flex-1 overflow-hidden bg-black">
+                        {% for img in car.images.all %}
+                            <div x-show="activeSlide === {{ forloop.counter }}" class="absolute inset-0 transition-opacity duration-300 flex items-center justify-center">
+                                <!-- تغییر مهم: استفاده از object-contain به جای object-cover -->
+                                <img src="{{ img.image.url }}" alt="{{ car.title }}" class="w-full h-full object-contain">
+                            </div>
+                        {% endfor %}
 
-          <div class="grid grid-cols-2 gap-4 mb-8">
-            <div
-              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
-            >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-                >برند و مدل</span
-              >
-              <span class="font-bold text-gray-800 dark:text-gray-200"
-                >{{ car.brand }} {{ car.model }}</span
-              >
-            </div>
-            <div
-              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
-            >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-                >سال ساخت</span
-              >
-              <span class="font-bold text-gray-800 dark:text-gray-200"
-                >{{ car.year }}</span
-              >
-            </div>
-            <div
-              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
-            >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-                >کارکرد</span
-              >
-              <span class="font-bold text-gray-800 dark:text-gray-200"
-                >{{ car.mileage }} کیلومتر</span
-              >
-            </div>
-            <div
-              class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center"
-            >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-                >تاریخ ثبت</span
-              >
-              <span class="font-bold text-gray-800 dark:text-gray-200"
-                >{{ car.created_at|date:"Y/m/d" }}</span
-              >
-            </div>
-          </div>
-        </div>
+                        <!-- دکمه‌های چپ و راست -->
+                        {% if car.images.count > 1 %}
+                            <button @click="activeSlide = activeSlide === 1 ? totalSlides : activeSlide - 1" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition z-10">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <button @click="activeSlide = activeSlide === totalSlides ? 1 : activeSlide + 1" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition z-10">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        {% endif %}
+                    </div>
 
-        <div class="mt-6">
-          <a
-            href="#"
-            class="block w-full text-center bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg shadow-blue-500/30"
-          >
-            درخواست تماس با فروشنده
+                    <!-- تصاویر بندانگشتی (Thumbnails) -->
+                    {% if car.images.count > 1 %}
+                    <div class="flex gap-2 p-2 bg-gray-100 dark:bg-gray-800 overflow-x-auto">
+                        {% for img in car.images.all %}
+                            <!-- تغییر مهم: عکس‌های کوچک هم با object-cover نمایش داده می‌شوند تا قاب مربعی داشته باشند -->
+                            <img src="{{ img.image.url }}" @click="activeSlide = {{ forloop.counter }}" class="w-16 h-16 object-cover rounded cursor-pointer border-2 transition" :class="activeSlide === {{ forloop.counter }} ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="flex items-center justify-center h-full text-gray-400">تصویری ثبت نشده است</div>
+                {% endif %}
+                <span class="absolute top-4 right-4 bg-primary text-white text-sm px-3 py-1 rounded-md shadow-md z-10">{{ car.get_status_display }}</span>
+            </div>
+
+            <!-- بخش اطلاعات -->
+            <div class="p-8 flex flex-col justify-between">
+                <div>
+                    <!-- عنوان و دکمه علاقه‌مندی -->
+                    <div class="flex justify-between items-start mb-4 gap-4">
+                        <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">{{ car.title }}</h1>
+
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'toggle_favorite' car.pk %}" class="flex-shrink-0 p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-100 dark:hover:bg-red-900 transition group" title="افزودن به علاقه‌مندی‌ها">
+                                {% if is_favorite %}
+                                    <!-- قلب قرمز (ذخیره شده) -->
+                                    <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                {% else %}
+                                    <!-- قلب خالی (ذخیره نشده) -->
+                                    <svg class="w-8 h-8 text-gray-400 group-hover:text-red-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-2xl font-bold text-primary dark:text-blue-400 mb-6 border-b pb-6 dark:border-gray-700">
+                        {{ car.price|floatformat:"0" }} <span class="text-sm font-normal text-gray-500">{% translate "تومان" %}</span>
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{% translate "برند و مدل" %}</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.brand }} {{ car.model }}</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{% translate "سال ساخت" %}</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.year }}</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{% translate "کارکرد" %}</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.mileage }} {% translate "کیلومتر" %}</span>
+                        </div>
+
+                        <!-- فیلدهای جدید -->
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">رنگ</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.color|default:"-" }}</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">وضعیت موتور</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.get_engine_status_display }}</span>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">گیربکس</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.get_gearbox_type_display }} - {{ car.get_gearbox_status_display }}</span>
+                        </div>
+
+                        {% if car.chassis_number %}
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg text-center">
+                            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-1">شاسی</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ car.chassis_number }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if car.is_exchangeable %}
+                        <div class="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg text-center border border-green-200 dark:border-green-800 md:col-span-2">
+                            <span class="font-bold text-green-700 dark:text-green-400 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                امکان معاوضه دارد
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- بخش ارسال پیام -->
                 <div class="mt-6 border-t border-gray-100 dark:border-gray-700 pt-6">
                     {% if user.is_authenticated %}
                         {% if user == car.user %}
-                            <p class="text-center text-gray-500">این آگهی متعلق به شماست.</p>
+                            <p class="text-center text-gray-500 font-medium">{% translate "این آگهی متعلق به شماست." %}</p>
                         {% else %}
-                            <h4 class="font-bold text-gray-800 dark:text-white mb-3">ارسال پیام به فروشنده</h4>
+                            <h4 class="font-bold text-gray-800 dark:text-white mb-3">{% translate "ارسال پیام به فروشنده" %}</h4>
                             <form method="post">
                                 {% csrf_token %}
                                 {{ message_form.content }}
                                 <button type="submit" class="mt-3 block w-full text-center bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition duration-300">
-                                    ارسال پیام
+                                    {% translate "ارسال پیام" %}
                                 </button>
                             </form>
                         {% endif %}
                     {% else %}
                         <a href="{% url 'login' %}" class="block w-full text-center bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg">
-                            برای تماس با فروشنده وارد شوید
+                            {% translate "برای تماس با فروشنده وارد شوید" %}
                         </a>
                     {% endif %}
                 </div>
-    <!-- بخش توضیحات -->
-    <div
-      class="p-8 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
-    >
-      <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">
-        توضیحات فروشنده
-      </h3>
-      <p
-        class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"
-      >
-        {{ car.description }}
-      </p>
+            </div>
+        </div>
+
+        <!-- بخش توضیحات -->
+        <div class="p-8 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">{% translate "توضیحات فروشنده" %}</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">{{ car.description }}</p>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

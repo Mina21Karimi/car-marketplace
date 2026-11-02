@@ -1,12 +1,18 @@
 from django.contrib import admin
 from .models import CarListing, PartListing
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting, CarImage
+
+
+class CarImageInline(admin.TabularInline):
+    model = CarImage
+    extra = 1
 
 @admin.register(CarListing)
 class CarListingAdmin(admin.ModelAdmin):
     list_display = ('title', 'brand', 'model', 'year', 'price', 'status', 'created_at')
     list_filter = ('brand', 'status', 'year')
     search_fields = ('title', 'brand', 'model')
+    inlines = [CarImageInline]
 
 @admin.register(PartListing)
 class PartListingAdmin(admin.ModelAdmin):
@@ -39,3 +45,4 @@ class SiteSettingAdmin(admin.ModelAdmin):
         if self.model.objects.count() >= 1:
             return False
         return super().has_add_permission(request)
+
