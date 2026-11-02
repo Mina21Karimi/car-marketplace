@@ -169,6 +169,7 @@
                             {% if user.is_authenticated %}
                                 <div class="mb-6 border-t border-gray-100 dark:border-gray-700 pt-6">
                                     <h3 class="text-xs font-bold text-gray-400 mb-3 px-2">{% translate "حساب کاربری" %}</h3>
+                                    <a href="{% url 'profile_settings' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">تنظیمات پروفایل</a>
                                     <a href="{% url 'my_favorites' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">علاقه‌مندی‌های من</a>
                                     <a href="{% url 'dashboard' %}" class="block px-3 py-2.5 rounded-xl text-primary font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition mb-1">{% translate "پنل کاربری من" %}</a>
                                     <a href="{% url 'inbox' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "صندوق پیام‌ها" %}</a>

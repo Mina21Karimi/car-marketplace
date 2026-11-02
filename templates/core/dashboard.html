@@ -1,147 +1,102 @@
 {% extends 'base.html' %}
-{% block title %}پنل کاربری{% endblock %}
+{% load i18n %}
+
+{% block title %}پنل کاربری | پلتفرم خودرو{% endblock %}
+
 {% block content %}
 <div class="max-w-6xl mx-auto mt-8">
-  <h1
-    class="text-3xl font-bold text-gray-800 dark:text-white mb-8 border-r-4 border-primary pr-4"
-  >
-    پنل کاربری من
-  </h1>
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 border-r-4 border-primary pr-4">پنل کاربری من</h1>
 
-  <!-- بخش آگهی‌های خودرو -->
-  <div class="mb-12">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200">
-        آگهی‌های خودروی من
-      </h2>
-      <a
-        href="{% url 'add_car' %}"
-        class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition"
-        >+ ثبت خودرو جدید</a
-      >
+    <!-- بخش آگهی‌های خودرو -->
+    <div class="mb-12">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200">آگهی‌های خودروی من</h2>
+            <a href="{% url 'add_car' %}" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">+ ثبت خودرو جدید</a>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <table class="w-full text-right">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-sm">
+                    <tr>
+                        <th class="px-6 py-4 font-medium">عنوان</th>
+                        <th class="px-6 py-4 font-medium">قیمت</th>
+                        <th class="px-6 py-4 font-medium">وضعیت</th>
+                        <th class="px-6 py-4 font-medium text-left">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    {% for car in user_cars %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
+                        <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">{{ car.title }}</td>
+                        <td class="px-6 py-4 text-primary dark:text-blue-400">{{ car.price|floatformat:"0" }} تومان</td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs px-2 py-1 rounded-md {% if car.status == 'published' %}bg-green-100 text-green-700{% elif car.status == 'sold' %}bg-red-100 text-red-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ car.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-left flex justify-end gap-2 items-center">
+                            <!-- دکمه فروخته شد (فقط اگر منتشر شده باشد) -->
+                            {% if car.status == 'published' %}
+                                <form method="post" action="{% url 'mark_as_sold' car.pk %}" class="inline m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-green-600 hover:text-green-800 text-sm font-medium bg-green-50 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded transition">فروخته شد</button>
+                                </form>
+                            {% endif %}
+
+                            <a href="{% url 'edit_car' car.pk %}" class="text-blue-500 hover:text-blue-700 text-sm">ویرایش</a>
+                            <a href="{% url 'delete_car' car.pk %}" class="text-red-500 hover:text-red-700 text-sm">حذف</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">هنوز هیچ خودرویی ثبت نکرده‌اید.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div
-      class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700"
-    >
-      <table class="w-full text-right">
-        <thead
-          class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-sm"
-        >
-          <tr>
-            <th class="px-6 py-4 font-medium">عنوان</th>
-            <th class="px-6 py-4 font-medium">قیمت</th>
-            <th class="px-6 py-4 font-medium">وضعیت</th>
-            <th class="px-6 py-4 font-medium text-left">عملیات</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-          {% for car in user_cars %}
-          <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
-            <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">
-              {{ car.title }}
-            </td>
-            <td class="px-6 py-4 text-primary dark:text-blue-400">
-              {{ car.price|floatformat:"0" }} تومان
-            </td>
-            <td class="px-6 py-4">
-              <span
-                class="text-xs px-2 py-1 rounded-md {% if car.status == 'published' %}bg-green-100 text-green-700{% elif car.status == 'sold' %}bg-red-100 text-red-700{% else %}bg-gray-100 text-gray-700{% endif %}"
-              >
-                {{ car.get_status_display }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-left flex justify-end gap-2">
-              <a
-                href="{% url 'edit_car' car.pk %}"
-                class="text-blue-500 hover:text-blue-700 text-sm"
-                >ویرایش</a
-              >
-              <a
-                href="{% url 'delete_car' car.pk %}"
-                class="text-red-500 hover:text-red-700 text-sm"
-                >حذف</a
-              >
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-              هنوز هیچ خودرویی ثبت نکرده‌اید.
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <!-- بخش آگهی‌های قطعات -->
+    <div>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200">آگهی‌های قطعات من</h2>
+            <a href="{% url 'add_part' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition">+ ثبت قطعه جدید</a>
+        </div>
 
-  <!-- بخش آگهی‌های قطعات -->
-  <div>
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200">
-        آگهی‌های قطعات من
-      </h2>
-      <a
-        href="{% url 'add_part' %}"
-        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition"
-        >+ ثبت قطعه جدید</a
-      >
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <table class="w-full text-right">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-sm">
+                    <tr>
+                        <th class="px-6 py-4 font-medium">نام قطعه</th>
+                        <th class="px-6 py-4 font-medium">قیمت</th>
+                        <th class="px-6 py-4 font-medium">وضعیت</th>
+                        <th class="px-6 py-4 font-medium text-left">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    {% for part in user_parts %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
+                        <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">{{ part.name }}</td>
+                        <td class="px-6 py-4 text-green-600 dark:text-green-400">{{ part.price|floatformat:"0" }} تومان</td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs px-2 py-1 rounded-md {% if part.condition == 'new' %}bg-blue-100 text-blue-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                                {{ part.get_condition_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-left flex justify-end gap-2 items-center">
+                            <a href="{% url 'edit_part' part.pk %}" class="text-blue-500 hover:text-blue-700 text-sm">ویرایش</a>
+                            <a href="{% url 'delete_part' part.pk %}" class="text-red-500 hover:text-red-700 text-sm">حذف</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">هنوز هیچ قطعه‌ای ثبت نکرده‌اید.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <div
-      class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700"
-    >
-      <table class="w-full text-right">
-        <thead
-          class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-sm"
-        >
-          <tr>
-            <th class="px-6 py-4 font-medium">نام قطعه</th>
-            <th class="px-6 py-4 font-medium">قیمت</th>
-            <th class="px-6 py-4 font-medium">وضعیت</th>
-            <th class="px-6 py-4 font-medium text-left">عملیات</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-          {% for part in user_parts %}
-          <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
-            <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">
-              {{ part.name }}
-            </td>
-            <td class="px-6 py-4 text-green-600 dark:text-green-400">
-              {{ part.price|floatformat:"0" }} تومان
-            </td>
-            <td class="px-6 py-4">
-              <span
-                class="text-xs px-2 py-1 rounded-md {% if part.condition == 'new' %}bg-blue-100 text-blue-700{% else %}bg-orange-100 text-orange-700{% endif %}"
-              >
-                {{ part.get_condition_display }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-left flex justify-end gap-2">
-              <a
-                href="{% url 'edit_part' part.pk %}"
-                class="text-blue-500 hover:text-blue-700 text-sm"
-                >ویرایش</a
-              >
-              <a
-                href="{% url 'delete_part' part.pk %}"
-                class="text-red-500 hover:text-red-700 text-sm"
-                >حذف</a
-              >
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-              هنوز هیچ قطعه‌ای ثبت نکرده‌اید.
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
 {% endblock %}

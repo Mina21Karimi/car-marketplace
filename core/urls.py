@@ -21,4 +21,6 @@ urlpatterns = [
     path('favorites/', views.my_favorites, name='my_favorites'),
     path('cars/', views.all_cars, name='all_cars'), # <--- مسیر همه خودروها
     path('parts/<int:pk>/', views.part_detail, name='part_detail'),
+    path('cars/<int:pk>/mark-sold/', views.mark_as_sold, name='mark_as_sold'),
+    path('profile/', views.profile_settings, name='profile_settings'),
 ]

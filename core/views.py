@@ -9,7 +9,7 @@ from .models import (
 )
 from .forms import (
     CarListingForm, PartListingForm, MessageForm,
-    ConsultationForm, TicketForm
+    ConsultationForm, TicketForm, UserProfileForm
 )
 from django.core.paginator import Paginator
 
@@ -294,3 +294,23 @@ def all_cars(request):
 def part_detail(request, pk):
     part = get_object_or_404(PartListing, pk=pk)
     return render(request, 'core/part_detail.html', {'part': part})
+
+@login_required(login_url='login')
+def mark_as_sold(request, pk):
+    car = get_object_or_404(CarListing, pk=pk, user=request.user)
+    if request.method == 'POST':
+        car.status = 'sold'
+        car.save()
+    return redirect('dashboard')
+
+@login_required(login_url='login')
+def profile_settings(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'core/profile_settings.html', {'form': form})
