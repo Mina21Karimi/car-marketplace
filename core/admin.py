@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import CarListing, PartListing
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting, CarImage
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Dealership, SiteSetting, CarImage, Report
 
 
 class CarImageInline(admin.TabularInline):
@@ -45,4 +44,10 @@ class SiteSettingAdmin(admin.ModelAdmin):
         if self.model.objects.count() >= 1:
             return False
         return super().has_add_permission(request)
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('reporter', 'reason', 'car', 'part', 'is_reviewed', 'created_at')
+    list_filter = ('reason', 'is_reviewed', 'created_at')
+    search_fields = ('reporter__username', 'description')
 

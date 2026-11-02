@@ -5,11 +5,11 @@ from django.db.models import Q
 from django.utils import timezone
 from .models import (
     CarListing, PartListing, Message, ConsultationRequest,
-    Ticket, Dealership, SiteSetting, Favorite, CarImage
+    Ticket, Dealership, SiteSetting, Favorite, CarImage, Report
 )
 from .forms import (
     CarListingForm, PartListingForm, MessageForm,
-    ConsultationForm, TicketForm, UserProfileForm
+    ConsultationForm, TicketForm, UserProfileForm, ReportForm
 )
 from django.core.paginator import Paginator
 
@@ -314,3 +314,30 @@ def profile_settings(request):
         form = UserProfileForm(instance=request.user)
 
     return render(request, 'core/profile_settings.html', {'form': form})
+
+@login_required(login_url='login')
+def report_car(request, pk):
+    car = get_object_or_404(CarListing, pk=pk)
+    if request.method == 'POST':
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.reporter = request.user
+            report.car = car
+            report.save()
+            return render(request, 'core/report_success.html')
+    else:
+        form = ReportForm()
+    return render(request, 'core/report_car.html', {'form': form, 'car': car})
+
+def seller_profile(request, user_id):
+    seller = get_object_or_404(User, pk=user_id)
+    # گرفتن تمام آگهی‌های منتشرشده این فروشنده
+    cars = CarListing.objects.filter(user=seller, status='published').order_by('-created_at')
+    parts = PartListing.objects.filter(user=seller).order_by('-created_at')
+
+    return render(request, 'core/seller_profile.html', {
+        'seller': seller,
+        'cars': cars,
+        'parts': parts
+    })

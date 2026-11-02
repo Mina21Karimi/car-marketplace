@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}پروفایل {{ seller.username }} | پلتفرم خودرو{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto mt-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 mb-8 flex items-center gap-6">
+        <div class="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center text-3xl font-bold">
+            {{ seller.username|first|upper }}
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ seller.first_name }} {{ seller.last_name }}</h1>
+            <p class="text-gray-500 mt-1">@{{ seller.username }}</p>
+            <p class="text-sm text-gray-400 mt-2">عضو از: {{ seller.date_joined|date:"Y/m/d" }}</p>
+        </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4 border-r-4 border-primary pr-3">آگهی‌های خودرو ({{ cars.count }})</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {% for car in cars %}
+            <!-- کارت خودرو (کپی از index.html) -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden group">
+                <div class="h-48 bg-gray-200 dark:bg-gray-700 relative">
+                    {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="flex items-center justify-center h-full text-gray-400">بدون تصویر</div>
+                    {% endif %}
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg dark:text-white">{{ car.title }}</h3>
+                    <p class="text-primary font-bold mt-2">{{ car.price|floatformat:"0" }} تومان</p>
+                    <a href="{% url 'car_detail' car.pk %}" class="mt-4 block text-center text-sm bg-blue-50 text-primary py-2 rounded-lg hover:bg-primary hover:text-white transition">مشاهده جزئیات</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-gray-500 col-span-full">این فروشنده هیچ خودرویی ثبت نکرده است.</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4 border-r-4 border-green-500 pr-3">آگهی‌های قطعات ({{ parts.count }})</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for part in parts %}
+            <!-- کارت قطعه -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden group">
+                <div class="h-48 bg-gray-200 dark:bg-gray-700 relative">
+                    {% if part.image %}
+                        <img src="{{ part.image.url }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="flex items-center justify-center h-full text-gray-400">بدون تصویر</div>
+                    {% endif %}
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg dark:text-white">{{ part.name }}</h3>
+                    <p class="text-green-600 font-bold mt-2">{{ part.price|floatformat:"0" }} تومان</p>
+                    <a href="{% url 'part_detail' part.pk %}" class="mt-4 block text-center text-sm bg-green-50 text-green-600 py-2 rounded-lg hover:bg-green-500 hover:text-white transition">مشاهده جزئیات</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-gray-500 col-span-full">این فروشنده هیچ قطعه‌ای ثبت نکرده است.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

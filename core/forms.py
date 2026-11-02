@@ -1,5 +1,5 @@
 from django import forms
-from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket
+from .models import CarListing, PartListing, Message, ConsultationRequest, Ticket, Report
 from django.contrib.auth.models import User
 
 # ==========================================
@@ -126,6 +126,21 @@ class UserProfileForm(forms.ModelForm):
             'first_name': 'نام',
             'last_name': 'نام خانوادگی',
             'email': 'ایمیل',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white'
+            })
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['reason', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
         }
 
     def __init__(self, *args, **kwargs):

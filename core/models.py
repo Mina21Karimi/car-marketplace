@@ -215,3 +215,25 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = "علاقه‌مندی"
         verbose_name_plural = "علاقه‌مندی‌ها"
+
+class Report(models.Model):
+    REASON_CHOICES = (
+        ('fake', 'آگهی جعلی یا کلاهبرداری'),
+        ('wrong_info', 'اطلاعات نادرست'),
+        ('sold', 'قبلاً فروخته شده'),
+        ('other', 'سایر موارد'),
+    )
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports_made', verbose_name="گزارش‌دهنده")
+    car = models.ForeignKey(CarListing, on_delete=models.CASCADE, null=True, blank=True, verbose_name="خودرو")
+    part = models.ForeignKey(PartListing, on_delete=models.CASCADE, null=True, blank=True, verbose_name="قطعه")
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES, verbose_name="دلیل گزارش")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیحات بیشتر")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
+    is_reviewed = models.BooleanField(default=False, verbose_name="بررسی شده")
+
+    class Meta:
+        verbose_name = "گزارش تخلف"
+        verbose_name_plural = "گزارش‌های تخلف"
+
+    def __str__(self):
+        return f"گزارش {self.get_reason_display()} - توسط {self.reporter.username}"

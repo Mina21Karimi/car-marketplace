@@ -130,6 +130,7 @@
                             <p class="text-center text-gray-500 font-medium">{% translate "این آگهی متعلق به شماست." %}</p>
                         {% else %}
                             <h4 class="font-bold text-gray-800 dark:text-white mb-3">{% translate "ارسال پیام به فروشنده" %}</h4>
+                            <p class="text-sm text-gray-500 mb-3">فروشنده: <a href="{% url 'seller_profile' car.user.id %}" class="text-primary hover:underline font-bold">{{ car.user.username }}</a></p>
                             <form method="post">
                                 {% csrf_token %}
                                 {{ message_form.content }}
@@ -151,6 +152,9 @@
         <div class="p-8 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">{% translate "توضیحات فروشنده" %}</h3>
             <p class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">{{ car.description }}</p>
+        </div>
+        <div class="mt-6 text-center">
+            <a href="{% url 'report_car' car.pk %}" class="text-sm text-red-400 hover:text-red-600 transition">گزارش این آگهی</a>
         </div>
     </div>
 </div>

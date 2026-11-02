@@ -23,4 +23,6 @@ urlpatterns = [
     path('parts/<int:pk>/', views.part_detail, name='part_detail'),
     path('cars/<int:pk>/mark-sold/', views.mark_as_sold, name='mark_as_sold'),
     path('profile/', views.profile_settings, name='profile_settings'),
+    path('cars/<int:pk>/report/', views.report_car, name='report_car'),
+    path('seller/<int:user_id>/', views.seller_profile, name='seller_profile'),
 ]
