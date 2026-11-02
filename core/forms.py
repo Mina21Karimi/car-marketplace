@@ -38,7 +38,7 @@ class CarListingForm(forms.ModelForm):
     class Meta:
         model = CarListing
         fields = [
-            'title', 'brand', 'model', 'year', 'mileage', 'price',
+            'title', 'brand', 'model', 'year', 'mileage','city', 'price',
             'chassis_number', 'color', 'engine_status', 'gearbox_type',
             'gearbox_status', 'is_exchangeable', 'description'
         ]

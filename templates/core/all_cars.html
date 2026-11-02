@@ -4,57 +4,122 @@
 {% block title %}همه خودروها | پلتفرم خودرو{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto mt-8">
-    <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 border-r-4 border-primary pr-4">همه خودروهای موجود</h1>
+<div class="max-w-7xl mx-auto mt-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for car in cars %}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
-            <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
-                {% if car.images.first %}
-                    <img src="{{ car.images.first.image.url }}" alt="{{ car.title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                {% else %}
-                    <div class="flex items-center justify-center h-full text-gray-400">بدون تصویر</div>
-                {% endif %}
-            </div>
-            <div class="p-5">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">{{ car.title }}</h3>
-                <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    <span>{{ car.brand }} {{ car.model }}</span>
-                    <span>{{ car.year }}</span>
-                </div>
-                <div class="flex justify-between items-center mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
-                    <span class="text-xl font-bold text-primary dark:text-blue-400">{{ car.price|floatformat:"0" }} <span class="text-sm font-normal text-gray-500">تومان</span></span>
-                    <a href="{% url 'car_detail' car.pk %}" class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition">جزئیات</a>
-                </div>
+        <!-- بخش فیلترها (سایدبار) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6 border-b pb-4 dark:border-gray-700">فیلترهای جستجو</h2>
+
+                <form method="get" action="{% url 'all_cars' %}" class="space-y-4">
+                    <!-- جستجوی متنی -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">جستجو</label>
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="مثلاً پژو..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+
+                    <!-- شهر -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">شهر</label>
+                        <input type="text" name="city" value="{{ request.GET.city|default:'' }}" placeholder="مثلاً تهران" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+
+                    <!-- برند -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">برند</label>
+                        <input type="text" name="brand" value="{{ request.GET.brand|default:'' }}" placeholder="مثلاً ایران خودرو" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+
+                    <!-- قیمت -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">از قیمت</label>
+                            <input type="number" name="min_price" value="{{ request.GET.min_price|default:'' }}" placeholder="حداقل" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">تا قیمت</label>
+                            <input type="number" name="max_price" value="{{ request.GET.max_price|default:'' }}" placeholder="حداکثر" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                        </div>
+                    </div>
+
+                    <!-- سال ساخت -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">از سال ساخت</label>
+                        <input type="number" name="year" value="{{ request.GET.year|default:'' }}" placeholder="مثلاً 1395" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+
+                    <!-- نوع گیربکس -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">نوع گیربکس</label>
+                        <select name="gearbox" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                            <option value="">همه</option>
+                            <option value="manual" {% if request.GET.gearbox == 'manual' %}selected{% endif %}>دنده‌ای</option>
+                            <option value="automatic" {% if request.GET.gearbox == 'automatic' %}selected{% endif %}>اتوماتیک</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-4 flex flex-col gap-2">
+                        <button type="submit" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">اعمال فیلترها</button>
+                        <a href="{% url 'all_cars' %}" class="w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-lg transition">پاک کردن فیلترها</a>
+                    </div>
+                </form>
             </div>
         </div>
-        {% empty %}
-        <div class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl">هیچ آگهی یافت نشد.</div>
-        {% endfor %}
-    </div>
 
-    <!-- بخش صفحه‌بندی (Pagination) -->
-    {% if cars.has_other_pages %}
-    <div class="flex justify-center mt-12">
-        <nav class="flex space-x-2 space-x-reverse">
-            {% if cars.has_previous %}
-                <a href="?page={{ cars.previous_page_number }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">قبلی</a>
+        <!-- بخش نمایش خودروها -->
+        <div class="lg:col-span-3">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">نتایج جستجو</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for car in cars %}
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 group">
+                    <div class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden relative">
+                        {% if car.images.first %}
+                            <img src="{{ car.images.first.image.url }}" alt="{{ car.title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        {% else %}
+                            <div class="flex items-center justify-center h-full text-gray-400">بدون تصویر</div>
+                        {% endif %}
+                        <span class="absolute top-3 right-3 bg-primary text-white text-xs px-2 py-1 rounded-md">{{ car.city }}</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">{{ car.title }}</h3>
+                        <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <span>{{ car.brand }} {{ car.model }}</span>
+                            <span>{{ car.year }}</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                            <span class="text-xl font-bold text-primary dark:text-blue-400">{{ car.price|floatformat:"0" }} <span class="text-sm font-normal text-gray-500">تومان</span></span>
+                            <a href="{% url 'car_detail' car.pk %}" class="text-sm bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition">جزئیات</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-gray-800 rounded-xl">هیچ آگهی با این مشخصات یافت نشد.</div>
+                {% endfor %}
+            </div>
+
+            <!-- صفحه‌بندی -->
+            {% if cars.has_other_pages %}
+            <div class="flex justify-center mt-12">
+                <nav class="flex space-x-2 space-x-reverse">
+                    {% if cars.has_previous %}
+                        <a href="?page={{ cars.previous_page_number }}&q={{ request.GET.q|default:'' }}&city={{ request.GET.city|default:'' }}&brand={{ request.GET.brand|default:'' }}&min_price={{ request.GET.min_price|default:'' }}&max_price={{ request.GET.max_price|default:'' }}&year={{ request.GET.year|default:'' }}&gearbox={{ request.GET.gearbox|default:'' }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 transition">قبلی</a>
+                    {% endif %}
+                    {% for num in cars.paginator.page_range %}
+                        {% if cars.number == num %}
+                            <span class="px-4 py-2 bg-primary text-white rounded-lg font-bold">{{ num }}</span>
+                        {% elif num > cars.number|add:'-3' and num < cars.number|add:'3' %}
+                            <a href="?page={{ num }}&q={{ request.GET.q|default:'' }}&city={{ request.GET.city|default:'' }}&brand={{ request.GET.brand|default:'' }}&min_price={{ request.GET.min_price|default:'' }}&max_price={{ request.GET.max_price|default:'' }}&year={{ request.GET.year|default:'' }}&gearbox={{ request.GET.gearbox|default:'' }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 transition">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if cars.has_next %}
+                        <a href="?page={{ cars.next_page_number }}&q={{ request.GET.q|default:'' }}&city={{ request.GET.city|default:'' }}&brand={{ request.GET.brand|default:'' }}&min_price={{ request.GET.min_price|default:'' }}&max_price={{ request.GET.max_price|default:'' }}&year={{ request.GET.year|default:'' }}&gearbox={{ request.GET.gearbox|default:'' }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 transition">بعدی</a>
+                    {% endif %}
+                </nav>
+            </div>
             {% endif %}
-
-            {% for num in cars.paginator.page_range %}
-                {% if cars.number == num %}
-                    <span class="px-4 py-2 bg-primary text-white rounded-lg font-bold">{{ num }}</span>
-                {% elif num > cars.number|add:'-3' and num < cars.number|add:'3' %}
-                    <a href="?page={{ num }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
-
-            {% if cars.has_next %}
-                <a href="?page={{ cars.next_page_number }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">بعدی</a>
-            {% endif %}
-        </nav>
+        </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}

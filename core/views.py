@@ -257,10 +257,34 @@ def dealerships(request):
     return render(request, 'core/dealerships.html', {'dealerships': all_dealerships})
 
 def all_cars(request):
-    # گرفتن همه آگهی‌های منتشر شده
     cars_list = CarListing.objects.filter(status='published').order_by('-created_at')
 
-    # صفحه‌بندی: هر صفحه ۱۲ آگهی
+    # دریافت مقادیر فیلترها از URL
+    q = request.GET.get('q')
+    city = request.GET.get('city')
+    brand = request.GET.get('brand')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    year = request.GET.get('year')
+    gearbox = request.GET.get('gearbox')
+
+    # اعمال فیلترها
+    if q:
+        cars_list = cars_list.filter(Q(title__icontains=q) | Q(brand__icontains=q) | Q(model__icontains=q))
+    if city:
+        cars_list = cars_list.filter(city__icontains=city)
+    if brand:
+        cars_list = cars_list.filter(brand__icontains=brand)
+    if min_price:
+        cars_list = cars_list.filter(price__gte=min_price)
+    if max_price:
+        cars_list = cars_list.filter(price__lte=max_price)
+    if year:
+        cars_list = cars_list.filter(year__gte=year)
+    if gearbox:
+        cars_list = cars_list.filter(gearbox_type=gearbox)
+
+    # صفحه‌بندی
     paginator = Paginator(cars_list, 12)
     page_number = request.GET.get('page')
     cars = paginator.get_page(page_number)

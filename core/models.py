@@ -31,6 +31,7 @@ class CarListing(models.Model):
     model = models.CharField(max_length=100, verbose_name="مدل")
     year = models.IntegerField(verbose_name="سال ساخت")
     mileage = models.IntegerField(verbose_name="کارکرد (کیلومتر)")
+    city = models.CharField(max_length=100, verbose_name="شهر", default="تهران")
     price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="قیمت (تومان)")
 
     chassis_number = models.CharField(max_length=100, blank=True, null=True, verbose_name="شاسی")
