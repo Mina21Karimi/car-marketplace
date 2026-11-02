@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}خطای سرور | 500{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+    <h1 class="text-9xl font-extrabold text-red-500 mb-4 drop-shadow-lg">500</h1>
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">مشکلی در سرور پیش آمده است!</h2>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-lg mx-auto">
+        تیم فنی ما در حال بررسی این مشکل هستند. لطفاً چند دقیقه دیگر دوباره تلاش کنید.
+    </p>
+    <a href="/" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg">
+        تلاش مجدد
+    </a>
+</div>
+{% endblock %}

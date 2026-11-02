@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}صفحه پیدا نشد | 404{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+    <h1 class="text-9xl font-extrabold text-primary dark:text-blue-500 mb-4 drop-shadow-lg">404</h1>
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">صفحه‌ای که دنبالش بودید پیدا نشد!</h2>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-lg mx-auto">
+        شاید آدرس را اشتباه وارد کرده‌اید، یا این آگهی حذف شده است. نگران نباشید، می‌توانید به صفحه اصلی برگردید.
+    </p>
+    <a href="/" class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg hover:shadow-xl hover:-translate-y-1 transform flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        بازگشت به صفحه اصلی
+    </a>
+</div>
+{% endblock %}
