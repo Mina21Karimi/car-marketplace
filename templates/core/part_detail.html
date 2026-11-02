@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ part.name }} | پلتفرم خودرو{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+    <a href="{% url 'home' %}" class="inline-flex items-center text-primary hover:underline mb-6">
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        بازگشت به صفحه اصلی
+    </a>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- تصویر -->
+            <div class="h-72 md:h-full min-h-[300px] bg-gray-200 dark:bg-gray-900 relative">
+                {% if part.image %}
+                    <img src="{{ part.image.url }}" alt="{{ part.name }}" class="w-full h-full object-cover absolute inset-0">
+                {% else %}
+                    <div class="flex items-center justify-center h-full text-gray-400">تصویری ثبت نشده است</div>
+                {% endif %}
+                <span class="absolute top-4 right-4 bg-green-500 text-white text-sm px-3 py-1 rounded-md shadow-md">{{ part.get_condition_display }}</span>
+            </div>
+
+            <!-- اطلاعات -->
+            <div class="p-8 flex flex-col justify-between">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">{{ part.name }}</h1>
+                    <p class="text-lg text-gray-500 mb-6">{{ part.brand }}</p>
+
+                    <p class="text-2xl font-bold text-green-600 dark:text-green-400 mb-6 border-b pb-6 dark:border-gray-700">
+                        {{ part.price|floatformat:"0" }} <span class="text-sm font-normal text-gray-500">تومان</span>
+                    </p>
+
+                    <div class="space-y-4">
+                        {% if part.part_number %}
+                        <div class="flex justify-between border-b pb-2 dark:border-gray-700">
+                            <span class="text-gray-500">شماره فنی قطعه:</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ part.part_number }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between border-b pb-2 dark:border-gray-700">
+                            <span class="text-gray-500">وضعیت:</span>
+                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ part.get_condition_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <a href="{% url 'login' %}" class="block w-full text-center bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg">
+                        درخواست تماس با فروشنده
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- توضیحات -->
+        <div class="p-8 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">توضیحات فروشنده</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">{{ part.description }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -19,4 +19,6 @@ urlpatterns = [
     path('dealerships/', views.dealerships, name='dealerships'),
     path('cars/<int:pk>/favorite/', views.toggle_favorite, name='toggle_favorite'),
     path('favorites/', views.my_favorites, name='my_favorites'),
+    path('cars/', views.all_cars, name='all_cars'), # <--- مسیر همه خودروها
+    path('parts/<int:pk>/', views.part_detail, name='part_detail'),
 ]

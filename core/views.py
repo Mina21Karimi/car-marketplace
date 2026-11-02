@@ -11,6 +11,7 @@ from .forms import (
     CarListingForm, PartListingForm, MessageForm,
     ConsultationForm, TicketForm
 )
+from django.core.paginator import Paginator
 
 # ==========================================
 # بخش صفحه اصلی و جستجو
@@ -254,3 +255,18 @@ def staff_dashboard(request):
 def dealerships(request):
     all_dealerships = Dealership.objects.all().order_by('-created_at')
     return render(request, 'core/dealerships.html', {'dealerships': all_dealerships})
+
+def all_cars(request):
+    # گرفتن همه آگهی‌های منتشر شده
+    cars_list = CarListing.objects.filter(status='published').order_by('-created_at')
+
+    # صفحه‌بندی: هر صفحه ۱۲ آگهی
+    paginator = Paginator(cars_list, 12)
+    page_number = request.GET.get('page')
+    cars = paginator.get_page(page_number)
+
+    return render(request, 'core/all_cars.html', {'cars': cars})
+
+def part_detail(request, pk):
+    part = get_object_or_404(PartListing, pk=pk)
+    return render(request, 'core/part_detail.html', {'part': part})
