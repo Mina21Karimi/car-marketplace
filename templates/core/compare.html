@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}مقایسه خودروها | پلتفرم خودرو{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto mt-8">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 border-r-4 border-primary pr-4">مقایسه خودروها</h1>
+
+    {% if cars %}
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-x-auto border border-gray-100 dark:border-gray-700">
+        <table class="w-full text-right min-w-[600px]">
+            <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 text-sm">
+                <tr>
+                    <th class="px-6 py-4 font-medium w-1/4">مشخصات</th>
+                    {% for car in cars %}
+                    <th class="px-6 py-4 text-center w-1/4 relative">
+                        <a href="{% url 'remove_from_compare' car.pk %}" class="absolute top-2 left-2 text-red-500 hover:text-red-700 bg-red-50 p-1 rounded-full" title="حذف از مقایسه">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </a>
+                        <img src="{{ car.images.first.image.url|default:'' }}" alt="{{ car.title }}" class="w-24 h-24 object-cover rounded-lg mx-auto mb-3 border border-gray-200 dark:border-gray-600">
+                        <a href="{% url 'car_detail' car.pk %}" class="text-primary hover:underline font-bold text-base block">{{ car.title }}</a>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">قیمت</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center font-bold text-primary dark:text-blue-400">{{ car.price|floatformat:"0" }} تومان</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">سال ساخت</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.year }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">کارکرد</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.mileage }} کیلومتر</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">رنگ</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.color|default:"-" }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">وضعیت موتور</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.get_engine_status_display }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">گیربکس</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.get_gearbox_type_display }} - {{ car.get_gearbox_status_display }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/20">شهر</td>
+                    {% for car in cars %}
+                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">{{ car.city }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-300 dark:border-gray-600">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        <p class="text-gray-500 dark:text-gray-400 text-lg">لیست مقایسه شما خالی است.</p>
+        <p class="text-sm text-gray-400 mt-2 mb-6">به صفحه خودروها بروید و روی آیکون مقایسه کلیک کنید.</p>
+        <a href="{% url 'all_cars' %}" class="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">مشاهده خودروها</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

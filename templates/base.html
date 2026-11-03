@@ -231,6 +231,14 @@
             </div>
         </div>
     </footer>
-
+    <!-- نوار شناور مقایسه -->
+    {% if request.session.compare_list %}
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
+        <div class="bg-gray-900 dark:bg-gray-800 text-white rounded-full shadow-2xl p-2 flex items-center justify-between border border-gray-700">
+            <span class="text-sm font-medium px-4">تعداد {{ request.session.compare_list|length }} خودرو برای مقایسه</span>
+            <a href="{% url 'compare_view' %}" class="bg-primary hover:bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold transition">مشاهده و مقایسه</a>
+        </div>
+    </div>
+    {% endif %}
 </body>
 </html>

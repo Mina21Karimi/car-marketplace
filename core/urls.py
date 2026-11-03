@@ -25,4 +25,7 @@ urlpatterns = [
     path('profile/', views.profile_settings, name='profile_settings'),
     path('cars/<int:pk>/report/', views.report_car, name='report_car'),
     path('seller/<int:user_id>/', views.seller_profile, name='seller_profile'),
+    path('cars/<int:pk>/compare/', views.add_to_compare, name='add_to_compare'),
+    path('compare/remove/<int:pk>/', views.remove_from_compare, name='remove_from_compare'),
+    path('compare/', views.compare_view, name='compare_view'),
 ]

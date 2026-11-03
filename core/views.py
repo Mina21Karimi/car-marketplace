@@ -341,3 +341,31 @@ def seller_profile(request, user_id):
         'cars': cars,
         'parts': parts
     })
+
+# ==========================================
+# بخش مقایسه خودروها
+# ==========================================
+def add_to_compare(request, pk):
+    # گرفتن لیست مقایسه از سشن (اگر نبود، یک لیست خالی می‌سازد)
+    compare_list = request.session.get('compare_list', [])
+
+    # اگر خودرو در لیست نبود و تعداد کمتر از ۳ بود، اضافه کن
+    if pk not in compare_list and len(compare_list) < 3:
+        compare_list.append(pk)
+        request.session['compare_list'] = compare_list
+
+    return redirect('car_detail', pk=pk)
+
+def remove_from_compare(request, pk):
+    compare_list = request.session.get('compare_list', [])
+    if pk in compare_list:
+        compare_list.remove(pk)
+        request.session['compare_list'] = compare_list
+    return redirect('compare_view')
+
+def compare_view(request):
+    compare_list = request.session.get('compare_list', [])
+    # گرفتن اطلاعات خودروهایی که آیدی آن‌ها در لیست است
+    cars = CarListing.objects.filter(pk__in=compare_list)
+
+    return render(request, 'core/compare.html', {'cars': cars})
