@@ -28,4 +28,5 @@ urlpatterns = [
     path('cars/<int:pk>/compare/', views.add_to_compare, name='add_to_compare'),
     path('compare/remove/<int:pk>/', views.remove_from_compare, name='remove_from_compare'),
     path('compare/', views.compare_view, name='compare_view'),
+    path('market-analysis/', views.market_analysis, name='market_analysis'),
 ]

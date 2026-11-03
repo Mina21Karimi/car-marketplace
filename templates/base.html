@@ -87,6 +87,7 @@
                 <a href="#" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "قطعات یدکی" %}</a>
                 <a href="{% url 'consultation' %}" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "مشاوره" %}</a>
                 <a href="{% url 'dealerships' %}" class="font-medium hover:text-primary transition dark:text-gray-200">{% translate "نمایشگاه‌ها" %}</a>
+                <a href="{% url 'market_analysis' %}" class="font-medium hover:text-primary transition dark:text-gray-200">تحلیل بازار</a>
             </nav>
 
             <!-- چپ: دکمه‌ها -->
@@ -164,6 +165,7 @@
                                 <a href="#" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "قطعات یدکی" %}</a>
                                 <a href="{% url 'consultation' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "مشاوره" %}</a>
                                 <a href="{% url 'dealerships' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">{% translate "نمایشگاه‌ها" %}</a>
+                                <a href="{% url 'market_analysis' %}" class="block px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-1">تحلیل بازار</a>
                             </div>
 
                             {% if user.is_authenticated %}

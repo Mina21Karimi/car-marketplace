@@ -12,6 +12,8 @@ from .forms import (
     ConsultationForm, TicketForm, UserProfileForm, ReportForm
 )
 from django.core.paginator import Paginator
+import json
+from django.db.models import Avg, Count
 
 # ==========================================
 # بخش صفحه اصلی و جستجو
@@ -369,3 +371,28 @@ def compare_view(request):
     cars = CarListing.objects.filter(pk__in=compare_list)
 
     return render(request, 'core/compare.html', {'cars': cars})
+
+# ==========================================
+# بخش تحلیل بازار
+# ==========================================
+def market_analysis(request):
+    # ۱. میانگین قیمت بر اساس سال ساخت
+    price_by_year = CarListing.objects.filter(status='published').values('year').annotate(avg_price=Avg('price')).order_by('year')
+    years = [item['year'] for item in price_by_year]
+    avg_prices = [float(item['avg_price']) for item in price_by_year]
+
+    # ۲. توزیع ۵ برند برتر
+    brand_distribution = CarListing.objects.filter(status='published').values('brand').annotate(count=Count('id')).order_by('-count')[:5]
+    brands = [item['brand'] for item in brand_distribution]
+    brand_counts = [item['count'] for item in brand_distribution]
+
+    # تبدیل به JSON برای استفاده در جاوااسکریپت
+    context = {
+        'years_json': json.dumps(years),
+        'avg_prices_json': json.dumps(avg_prices),
+        'brands_json': json.dumps(brands),
+        'brand_counts_json': json.dumps(brand_counts),
+        'total_cars': CarListing.objects.filter(status='published').count(),
+        'total_parts': PartListing.objects.count(),
+    }
+    return render(request, 'core/market_analysis.html', context)
