@@ -242,5 +242,107 @@
         </div>
     </div>
     {% endif %}
+    <!-- ========================================== -->
+    <!-- دستیار هوشمند (Chatbot) -->
+    <!-- ========================================== -->
+    <div x-data="chatbot()" class="fixed bottom-6 right-6 z-50">
+        <!-- دکمه شناور چت -->
+        <button @click="isOpen = !isOpen" class="bg-primary hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110">
+            <svg x-show="!isOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <svg x-show="isOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
+        <!-- پنجره چت -->
+        <div x-show="isOpen" @click.away="isOpen = false" class="absolute bottom-16 right-0 w-80 md:w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col" style="display: none;">
+            <!-- هدر چت -->
+            <div class="bg-primary text-white p-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold">دستیار هوشمند</h3>
+                    <p class="text-xs text-blue-100">پاسخگوی سوالات شما هستم</p>
+                </div>
+            </div>
+
+            <!-- بدنه پیام‌ها -->
+            <div class="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900" id="chat-body">
+                <template x-for="msg in messages" :key="msg.id">
+                    <div :class="msg.sender === 'bot' ? 'flex items-start gap-2' : 'flex items-start gap-2 flex-row-reverse'">
+                        <!-- آواتار -->
+                        <div :class="msg.sender === 'bot' ? 'bg-primary/10 text-primary' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                            <svg x-show="msg.sender === 'bot'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <svg x-show="msg.sender === 'user'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <!-- متن پیام -->
+                        <div :class="msg.sender === 'bot' ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200' : 'bg-primary text-white'" class="p-3 rounded-xl text-sm max-w-[80%] shadow-sm" x-html="msg.text"></div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- فرم ارسال پیام -->
+            <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+                <form @submit.prevent="sendMessage()" class="flex gap-2">
+                    <input type="text" x-model="userInput" placeholder="سوال خود را بنویسید..." class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white text-sm">
+                    <button type="submit" class="bg-primary hover:bg-blue-700 text-white p-2 rounded-lg transition">
+                        <svg class="w-5 h-5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function chatbot() {
+            return {
+                isOpen: false,
+                userInput: '',
+                messages: [
+                    { id: 1, sender: 'bot', text: 'سلام! من دستیار هوشمند خودرومارکت هستم. چطور می‌توانم به شما کمک کنم؟' }
+                ],
+                sendMessage() {
+                    if (this.userInput.trim() === '') return;
+
+                    // اضافه کردن پیام کاربر
+                    this.messages.push({ id: Date.now(), sender: 'user', text: this.userInput });
+                    const query = this.userInput.toLowerCase();
+                    this.userInput = '';
+
+                    // اسکرول به پایین
+                    this.$nextTick(() => {
+                        const chatBody = document.getElementById('chat-body');
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    });
+
+                    // منطق پاسخگویی ربات (Rule-Based)
+                    setTimeout(() => {
+                        let botResponse = '';
+
+                        if (query.includes('ثبت') || query.includes('آگهی')) {
+                            botResponse = 'برای ثبت آگهی، از منوی بالای سایت گزینه «ثبت آگهی» را انتخاب کنید. سپس نوع آگهی (خودرو یا قطعه) را مشخص کرده و فرم را تکمیل کنید.';
+                        } else if (query.includes('خرید') || query.includes('خودرو')) {
+                            botResponse = 'برای خرید خودرو، به صفحه «خرید خودرو» بروید. در آنجا می‌توانید با استفاده از فیلترهای شهر، قیمت و برند، خودروی مورد نظر خود را پیدا کنید.';
+                        } else if (query.includes('قیمت') || query.includes('تحلیل')) {
+                            botResponse = 'قیمت‌ها توسط فروشندگان تعیین می‌شوند. برای مشاهده میانگین قیمت بازار، به صفحه «تحلیل بازار» در منوی سایت مراجعه کنید.';
+                        } else if (query.includes('پشتیبانی') || query.includes('مشکل') || query.includes('تماس')) {
+                            botResponse = 'اگر مشکلی دارید یا نیاز به پشتیبانی دارید، می‌توانید از طریق <a href="/support/" class="text-primary underline">این لینک</a> یک تیکت ثبت کنید تا کارشناسان ما با شما تماس بگیرند.';
+                        } else if (query.includes('سلام') || query.includes('خوبی')) {
+                            botResponse = 'سلام! وقت بخیر. چطور می‌توانم کمکتان کنم؟';
+                        } else {
+                            botResponse = 'متأسفم، متوجه سوال شما نشدم. برای اینکه بهتر بتوانم کمکتان کنم، می‌توانید از بخش <a href="/support/" class="text-primary underline">پشتیبانی</a> به کارشناسان انسانی ما متصل شوید.';
+                        }
+
+                        this.messages.push({ id: Date.now() + 1, sender: 'bot', text: botResponse });
+
+                        // اسکرول مجدد
+                        this.$nextTick(() => {
+                            const chatBody = document.getElementById('chat-body');
+                            chatBody.scrollTop = chatBody.scrollHeight;
+                        });
+                    }, 800); // تاخیر کوتاه برای حس طبیعی
+                }
+            }
+        }
+    </script>
 </body>
 </html>
